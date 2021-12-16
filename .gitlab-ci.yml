@@ -60,6 +60,7 @@ dast-scan:
   image: docker.ekseed.org/fcli:ubuntu
   needs:
     - package_n_start
+    - sast-upload
   script:
     - fcli auth login ssc --url ${FTFY_SSC_URL} --token "${FTFY_ENC_TOKEN}"
     - fcli dast sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8980/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt

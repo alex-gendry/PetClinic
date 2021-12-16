@@ -17,8 +17,7 @@ sast-scan:
   stage: sast-scan
   script:
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.java
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.jsp
+    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -scan -f "petclinic-${CI_COMMIT_BRANCH}.fpr"
   artifacts:

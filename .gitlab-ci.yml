@@ -17,9 +17,7 @@ SAST-scan:
   stage: scan
   script:
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -b $FTFY_BUILD -clean
-    - ./mvnw package
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -b $FTFY_BUILD .
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -b $FTFY_BUILD -show-files
+    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -b $FTFY_BUILD source
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -b $FTFY_BUILD -scan -f $FTFY_FPR_FILE
   artifacts:
     name: FPR_FILE

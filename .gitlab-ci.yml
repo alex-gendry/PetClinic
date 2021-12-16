@@ -17,7 +17,6 @@ sast-scan:
   stage: sast-scan
   script:
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
-    - ./mvnw dependency:copy-dependencies
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.java
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.jsp
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files

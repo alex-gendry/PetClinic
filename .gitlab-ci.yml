@@ -18,8 +18,8 @@ sast-scan:
   script:
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
     - ./mvnw dependency:copy-dependencies
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp target/dependency/*.jar src/**/*.java
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp target/dependency/*.jar src/**/*.jsp
+    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.java
+    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp src/WEB-INF/lib/*.jar src/**/*.jsp
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -scan -f "petclinic-${CI_COMMIT_BRANCH}.fpr"
   artifacts:
@@ -46,8 +46,6 @@ package_n_start:
   dependencies:
     - sast-scan
   script:
-    - ./mvnw package
-    ## Login to docker registry
     - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
     - sudo docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
     - sudo docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8980:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA

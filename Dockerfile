@@ -30,7 +30,7 @@ COPY petclinic.war /petclinic/tomcat/webapps
 # Start tomcat at booting
 WORKDIR /petclinic/tomcat/bin
 RUN chmod +x catalina.sh
-#CMD ./catalina.sh run
+CMD ./catalina.sh run
 
 
 

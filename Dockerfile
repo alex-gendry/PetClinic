@@ -10,7 +10,7 @@ FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 
 RUN apt-get update
 
-#Install java 11
+#Install java
 RUN apt-get install openjdk-8-jdk -y
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV JRE_HOME /usr/lib/jvm/java-8-openjdk-amd64
@@ -31,8 +31,3 @@ COPY petclinic.war /petclinic/tomcat/webapps
 WORKDIR /petclinic/tomcat/bin
 RUN chmod +x catalina.sh
 CMD ./catalina.sh run
-
-
-
-
-

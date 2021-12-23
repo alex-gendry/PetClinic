@@ -16,12 +16,12 @@ variables:
 sast-scan:
   stage: sast-scan
   script:
-    - /fortify/SCA_21.2.1/bin/fortifyupdate
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" mvn clean package
+    - sudo /fortify/SCA_21.2.1/bin/fortifyupdate
+    - sudo /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
+    - sudo /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" mvn clean package
     #- /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -extdirs lib src/**/*
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -scan -f "petclinic-${CI_COMMIT_BRANCH}.fpr"
+    - sudo /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files
+    - sudo /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -scan -f "petclinic-${CI_COMMIT_BRANCH}.fpr"
   artifacts:
     name: FPR_FILE
     paths:
@@ -38,7 +38,7 @@ sast-upload:
   dependencies:
     - sast-scan
   script:
-    - /fortify/SCA_21.2.1/bin/fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application petclinic -applicationVersion $CI_COMMIT_BRANCH -file "petclinic-${CI_COMMIT_BRANCH}.fpr"
+    - sudo /fortify/SCA_21.2.1/bin/fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application petclinic -applicationVersion $CI_COMMIT_BRANCH -file "petclinic-${CI_COMMIT_BRANCH}.fpr"
   tags:
     - fortify-ubuntu
     - shell

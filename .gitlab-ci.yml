@@ -16,7 +16,7 @@ variables:
 sast-scan:
   stage: sast-scan
   script:
-    - /fortify/fortify/SCA_21.2.1/bin/fortifyupdate
+    - /fortify/SCA_21.2.1/bin/fortifyupdate
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
     - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" mvn clean package
     #- /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -extdirs lib src/**/*

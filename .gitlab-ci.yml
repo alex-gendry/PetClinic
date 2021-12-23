@@ -38,7 +38,7 @@ sast-upload:
   dependencies:
     - sast-scan
   script:
-    - sudo /fortify/SCA_21.2.1/bin/fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application petclinic -applicationVersion $CI_COMMIT_BRANCH -file "petclinic-${CI_COMMIT_BRANCH}.fpr"
+    - /fortify/SCA_21.2.1/bin/fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application petclinic -applicationVersion $CI_COMMIT_BRANCH -file "petclinic-${CI_COMMIT_BRANCH}.fpr"
   tags:
     - fortify-ubuntu
     - shell
@@ -50,9 +50,9 @@ package_n_start:
   dependencies:
     - sast-scan
   script:
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - sudo docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8980:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
+    - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
+    - docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8980:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
   tags:
     - fortify-ubuntu
     - shell

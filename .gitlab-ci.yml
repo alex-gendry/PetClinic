@@ -2,9 +2,9 @@ stages:
   - create_version
   - sast-scan
   - sast-upload
-#  - docker_start
-#  - dast-scan
-#  - docker_stop
+  - docker_start
+  - dast-scan
+  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org

@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RulePack xmlns="xmlns://www.fortifysoftware.com/schema/rules"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="RulePack">
+    <RulePackID>22E1EB91-6AE9-4E3E-9750-5BDC45ED1443</RulePackID>
+    <SKU>TEST</SKU>
+    <Name><![CDATA[]]></Name>
+    <Version>1.0</Version>
+    <Description><![CDATA[Test what info can get for WebInspect]]></Description>
+    <Rules version="3.2">
+        <RuleDefinitions />
+        <ScriptDefinitions>
+            <ScriptDefinition type="lib" formatVersion="20.1" name="WI_libs"><![CDATA[
+                function canonicalizeType(typeName, language){
+                    if (language == 'JAVA'){
+                        if (typeName == 'java.lang.String'){
+                          return 'String';
+                        }
+                        else if ( typeName == 'java.lang.Byte' ||
+                                  typeName == 'java.lang.Integer' ||
+                                  typeName == 'java.lang.Long' ||
+                                  typeName == 'java.lang.Short') {
+                          return 'Integer';
+                        }
+                        else if ( typeName == 'java.lang.Double' ||
+                                  typeName == 'java.lang.Number' ||
+                                  typeName == 'java.lang.Float') {
+                          return 'FloatingPoint';
+                        }
+                        else if (typeName == 'java.lang.Boolean'){
+                          return 'Boolean';
+                        }
+                        else if (typeName == 'java.util.Date'){
+                          return 'DateTime';
+                        }
+                    }
+                    return String(typeName);
+                }
+
+                function dbg(msg, indentLevel){
+                    if (indentLevel === undefined || indentLevel === null) {
+                        indentLevel = 0
+                    }
+
+                    msg = indentString(msg, indentLevel) 
+                    // alert(msg)
+                }
+
+                function printResults(results) {
+                    alert('There are ' + results.length + ' results:')
+
+                    for (var i=0; i < results.length; i++) {
+                        alert('Result ' + i + ': ' + results[i].URL.sourceLocation)
+
+                        alert(indentString('URL: ', 1))
+                        alert(indentString('url pattern: ' + results[i].URL.location, 2))
+                        alert(indentString('isTemplated: ' + results[i].URL.isTemplated, 2))
+
+                        alert(indentString('taintflags: ', 1))
+                        if (results[i].taintflags != null && results[i].taintflags !== undefined) {
+                            for (var j=0; j < results[i].taintflags.length; j++) {
+                                alert(indentString(results[i].taintflags[j], 2))
+                            }
+                        }
+
+                        if (results[i].Parameter === undefined || results[i].Parameter.type === undefined) {
+                            alert(indentString('Param type unknown', 1))
+                        }
+                        else {
+                            alert(indentString('Parameter: ', 1))
+                            alert(printTypeArray(results[i].Parameter.type, 2))
+                        }
+                        alert(" ")
+                    }
+                }
+
+                function indentString(msg, indentLevel) {
+                    indentation_string = ""
+                    for (var i = 0; i < indentLevel; i++ ){
+                        indentation_string += "\t"
+                    }
+                    return indentation_string + msg;
+                }
+
+                function printTypeArray(typesArray, indentLevel) {
+                    if (indentLevel === undefined || indentLevel === null) {
+                        indentLevel = 0
+                    }
+
+                    dbg('Parameter of type \'' + typesArray[0] + '\' has the following fields')
+                    for (var i=1; i < typesArray.length; i++) {
+                        // If type has subTypes
+                        if (Array.isArray(typesArray[i])) {
+                            alert(indentString(typesArray[i][0], indentLevel))
+                            printTypeArray(typesArray[i], indentLevel + 1)
+                        } else{
+                            alert(indentString(typesArray[i], indentLevel))
+                        }
+                    }
+                }
+
+                function getCategory(rule) {
+                    var category = rule.getCategory()
+                    var subcategory = rule.getSubcategory()
+                    if (subcategory != null){
+                        category = category + ': ' + subcategory
+                    }
+                    return category
+                }
+
+                function convertTypeArrayToStringArray(typeArray) {
+                    if (!Array.isArray(typeArray)) {
+                      typeArray.DataType = canonicalizeType(typeArray.DataType, 'JAVA')
+                      return
+                    }
+
+                    for (var i=0; i < typeArray.length; i++) {
+                        if (Array.isArray(typeArray[i])) {
+                            convertTypeArrayToStringArray(typeArray[i])
+                        }
+                        else {
+                          if (typeArray[i].DataType !== undefined) {
+                            typeArray[i].DataType = canonicalizeType(typeArray[i].DataType, 'JAVA')
+                          }
+                          if (typeArray[i].fields !== undefined) {
+                            for (var j=0; j < typeArray[i].fields.length; j++){
+                              convertTypeArrayToStringArray(typeArray[i].fields[j])
+                            }
+                          }
+                        }
+                    }
+                    return typeArray
+                }
+                ]]></ScriptDefinition>
+            <ScriptDefinition type="post" formatVersion="20.1" name="get_info_for_WI"><![CDATA[
+(function () {
+  function getAnnotationValue(annotation) {
+    if (annotation !== null && annotation !== undefined) {
+      if (annotation.get("value") !== null && annotation.get("value") !== undefined) {
+
+        if (annotation.get("value").isString()) {
+          return annotation.get("value").getStrValue();
+        }
+
+        if (annotation.get("value").isArray()) {
+          // actual annotation takes an array
+          if (annotation.get("value").element(0).isString()) {
+            return annotation.get("value").element(0).getStrValue();
+          }
+        }
+      }
+    }
+
+    // Otherwise return empty string
+    return "";
+  }
+
+  function normalizeCategory(this_type) {
+    if (this_type.startsWith("Cross-Site Scripting")) {
+      return "XSS";
+    }
+    else if (this_type.startsWith("SQL Injection")) {
+      return "SQLI";
+    }
+    else {
+      return this_type;
+    }
+
+  }
+
+  function isSimpleType(type_name) {
+    var simpleTypes = ["Unused",
+            "Unknown",
+            "Integer",
+            "FloatingPoint",
+            "String",
+            "DateTime",
+            "Guid",
+            "JSON",
+            "XML"]
+    
+    for (var i=0; i < simpleTypes.length; i++) {
+      if (type_name == simpleTypes[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function flattenParameters(param_object, findings, flattened_param_list) {
+    if (flattened_param_list == undefined){
+      if (isSimpleType(param_object.DataType)) {
+        var to_exclude = "false"
+        var to_exclude = ((param_object.DataType != "String" ) ? 'true' : 'false');
+        return new Array({Exclude: to_exclude,
+                NameMatches: new Array(param_object.parameterID),
+                DataTypes: new Array(param_object.DataType),
+                Findings: findings
+                });
+      }
+      flattened_param_list = new Array();
+    }
+
+    if (isSimpleType(param_object.DataType)) {
+      flattened_param_list.push({ name: param_object.name,
+                                  dataType: param_object.DataType
+                                  })
+    }
+
+    if (param_object.fields !== undefined) {
+      for (var i=0; i < param_object.fields.length; i++) {
+        flattenParameters(param_object.fields[i], findings, flattened_param_list);
+      }
+    }
+
+    var param_objects = new Array();
+
+    for (var i=0; i < flattened_param_list.length; i++) {
+
+      var to_exclude = "false"
+      var to_exclude = ((flattened_param_list[i].dataType != "String" ) ? 'true' : 'false');
+      var param_object =  { Exclude: to_exclude,
+                            DataTypes: new Array(flattened_param_list[i].dataType),
+                            NameMatches: new Array(flattened_param_list[i].name),
+                            Findings: findings
+                          };
+
+      param_objects.push(param_object);
+    }
+
+    return param_objects;
+  }
+
+  function GetFieldsOfTypeAndSupers(this_type) {
+    var fields_list = new Array();
+
+    dbg("current type: " + this_type.name);
+    var fields = this_type.fields;
+    if (fields === null) {
+      return null;
+    }
+
+    for (var i = 0; i < fields.length; i++) {
+      // Only collect unique field names (overridden fields)
+      dbg(
+        "processing Field: " + fields[i].name + " with type: " + fields[i].type
+      );
+
+      fields_list[fields_list.length] = getFieldTypes(fields[i]);
+      getSuperFieldTypes(fields_list[fields_list.length - 1]);
+    }
+    getSuperFieldTypes(this_type, fields_list)
+    return fields_list;
+  }
+
+  function getSuperFieldTypes(field_obj, fields_list) {
+    var this_field_type;
+    // Getting supers of base type
+    if (fields_list !== undefined) {
+      this_field_type = field_obj;
+    } else {
+      this_field_type = field_obj.DataType;
+    }
+
+    var supers = this_field_type.getSuperClasses();
+
+    // Only add field types that are not present on 'this_type'
+    if (supers == null || supers == undefined) {
+      return;
+    }
+
+    for (var i = 0; i < supers.length; i++) {
+      var this_super_fields = supers[i].fields;
+      if (this_super_fields.length > 0) {
+        for (var j = 0; j < this_super_fields.length; j++) {
+          var this_super_field_obj = getFieldTypes(this_super_fields[j]);
+          getSuperFieldTypes(this_super_field_obj);
+
+          // Check if the current object already has fields
+          if (field_obj.fields == undefined && fields_list == undefined) {
+            field_obj.fields = new Array();
+          }
+
+          // Handle base types vs. fields
+          if (fields_list == undefined){
+            field_obj.fields[field_obj.fields.length] = this_super_field_obj;
+          } else {
+            fields_list[fields_list.length] = this_super_field_obj
+          }
+        }
+      }
+    }
+  }
+
+  function getFieldTypes(thisField) {
+    // Try and get jsType (if thisField is not already a jsType)
+    var thisFieldType;
+    try {
+      thisFieldType = thisField.getType();
+    } catch (error) {
+      // Already a type
+      return thisField;
+    }
+
+    // Check if this type has subTypes
+    if (thisFieldType.fields.length > 0) {
+      var typeArray = new Array();
+      // recursivly get list
+      for (var i = 0; i < thisFieldType.fields.length; i++) {
+        typeArray[typeArray.length] = getFieldTypes(thisFieldType.fields[i]);
+      }
+      return {
+        name: String(thisField.name),
+        DataType: thisFieldType,
+        fields: typeArray,
+      };
+    } else {
+      return {
+        name: String(thisField.name),
+        DataType: getFieldTypes(thisFieldType),
+      };
+    }
+  }
+
+  var results = new Array();
+
+  output = {
+    ID: "Placeholder",
+    Description: "a description",
+    Frameworks: new Array("spring"),
+    Rules: results,
+  }
+
+  var vulns = getVulnerabilities();
+  var counter = 1;
+
+  var globalParameters = new Array();
+  function getOrAddParameterID(parameter) {
+    if (parameter.parameterID !== undefined && parameter.parameterID !== null) {
+      var index = globalParameters.findIndex(function (element, index, array) {
+        // ???? check equality without parameterID?
+      });
+      if (index == -1) {
+        index = globalParameters.length;
+        globalParameters[index] = parameter;
+      }
+      return index;
+    } else {
+      var index = parameter.parameterID;
+      if (
+        globalParameters[index] !== null &&
+        globalParameters[index] !== undefined
+      ) {
+        // TODO: check equality before returning. Throw error if not the same object!
+        return index;
+      } else {
+        globalParameters[index] = parameter;
+        return index;
+      }
+    }
+  }
+
+  for (var vulnIndex = 0; vulnIndex < vulns.length; vulnIndex++) {
+    var vuln = vulns[vulnIndex];
+
+    var thisResult = null;
+
+    // TODO: not just limit to XSS?
+    var thisResultCata = vuln.getRule().getCategory();
+    var thisResultSubCata = vuln.getRule().getSubcategory();
+
+    if (thisResultCata == "Cross-Site Scripting") {
+      var entryPosition = vuln.getTaintSource().getEntryPointArgument();
+      if (entryPosition == null || entryPosition == "this") {
+        continue;
+      }
+
+      if (thisResultSubCata != "<N/A>") {
+        thisResultCata = thisResultCata + ": " + thisResultSubCata;
+      }
+
+      thisResult = { };
+
+      thisResult.ID = vuln.getRule().getIdentifier();
+      // thisResult.ID = vuln.getInstanceIdentifier();
+
+      // Gather unique taint flags from issue and add to result
+      var issueTaintflags = [];
+      var issueValidationTaintflags = [];
+      var taintPaths = vuln.getTaintPaths();
+      for (var i = 0; i < taintPaths.length; i++) {
+        var theseTaintflags = taintPaths[i].getTaintFlags();
+        for (var j = 0; j < theseTaintflags.length; j++) {
+          // If validation taint flag present, store it
+          if (theseTaintflags[j].contains("VALIDATED")) {
+            issueValidationTaintflags.append(theseTaintFlags[j])
+          // if not a validation taint flag add it to taintflags
+          } else {
+            issueTaintflags.push(theseTaintflags[j]);
+          }
+        }
+      }
+
+      if (issueValidationTaintflags.length > 0) {
+        thisResult.Validation =  issueValidationTaintflags.filter(function (item, index) {
+          return issueValidationTaintflags.indexOf(item) === index;
+        });
+      }
+
+      // thisResult.taintflags = issueTaintflags.filter(function (item, index) {
+        // return issueTaintflags.indexOf(item) === index;
+      // });
+
+      entryPosition = entryPosition.intValue();
+
+      var sourceFunction = vuln.getSourceEnclosingFunction();
+      var controller = sourceFunction.getEnclosingClass();
+
+      dbg(
+        "setting thisResult.URL.sourceLocation to " +
+          sourceFunction.getFileName() +
+          ":" +
+          sourceFunction.getLineNumber()
+      );
+      //thisResult.PathMatches = sourceFunction.getFileName() + ":" + sourceFunction.getLineNumber();
+
+      var controller_request_mapping = controller.getAnnotation(
+        "org.springframework.web.bind.annotation.RequestMapping"
+      );
+      var function_request_mapping = sourceFunction.getAnnotation(
+        "org.springframework.web.bind.annotation.RequestMapping"
+      );
+      var function_post_mapping = sourceFunction.getAnnotation(
+        "org.springframework.web.bind.annotation.PostMapping"
+      );
+      var function_get_mapping = sourceFunction.getAnnotation(
+        "org.springframework.web.bind.annotation.GetMapping"
+      );
+      var controller_get_mapping = controller.getAnnotation(
+        "org.springframework.web.bind.annotation.GetMapping"
+      );
+      var function_put_mapping = sourceFunction.getAnnotation(
+        "org.springframework.web.bind.annotation.PutMapping"
+      );
+
+      // Check for the request type
+      httpMethodMatches = new Array();
+      var url = "";
+      var isTemplated = false;
+
+      if (function_request_mapping !== null) {
+        // If there is both a function and class Mapping
+        if (controller_request_mapping !== null) {
+          url = getAnnotationValue(controller_request_mapping);
+          url += getAnnotationValue(function_request_mapping);
+        } else {
+          url = getAnnotationValue(function_request_mapping);
+        }
+
+        if (url !== null) {
+          thisResult.PathMatches = new Array();
+          thisResult.PathMatches.push(url);
+          if (url.includes("{")) {
+            dbg("setting thisResult.URL.isTemplated = true");
+            isTemplated = true;
+          }
+
+          var argTypes = sourceFunction.getArgumentTypes();
+          var entryType = argTypes[entryPosition + 1]; // again +1. I think it's including 'this' in the arguments. Needs to be in parenthesis to prevent breaking JS!
+          var typeFields = GetFieldsOfTypeAndSupers(entryType);
+
+          thisResult.Parameters = new Array();
+          thisResult.Parameters[0] = {};
+          thisResult.Parameters[0].DataType = canonicalizeType(entryType, 'JAVA');
+
+          // thisResult.Parameters[0].DataType = String(entryType);
+          thisResult.Parameters[0].fields = convertTypeArrayToStringArray(
+            typeFields
+          );
+          var param_annotation = sourceFunction.getParameterAnnotation(entryPosition + 1, "org.springframework.web.bind.annotation.RequestParam");
+
+          thisResult.Parameters[0].parameterID = getAnnotationValue(param_annotation);
+
+          var theseFindings = new Array();
+          theseFindings.push({
+            Category: thisResultCata,
+            FindingType: normalizeCategory(thisResultCata),
+            Origin: "SCA",
+            OriginFindingID: vuln.getInstanceIdentifier()
+          });
+
+          thisResult.Parameters = flattenParameters(thisResult.Parameters[0], theseFindings);
+
+        }
+        var function_annotation = function_request_mapping.get("method");
+        if (function_annotation !== null && function_annotation.isArray()) {
+          for (var i = 0; i < function_annotation.length(); i++) {
+            var this_element = function_annotation.element(i);
+            if (this_element.isEnum()) {
+              httpMethodMatches[
+                httpMethodMatches.length
+              ] = String(this_element.getEnumValue());
+            }
+          }
+        }
+      }
+
+      thisResult.HttpMethodMatches = httpMethodMatches;
+
+      log(
+        "found a " +
+          getCategory(vuln.getRule()) +
+          " issue using an entrypoint: " +
+          controller +
+          "." +
+          sourceFunction.getName() +
+          "(" +
+          entryPosition +
+          ")"
+      );
+
+      // TODO: get from method
+      // TODO: find types of templated URLs, e.g. /{petId}/. What types if petId? Can be retrieved elsewhere.
+      if (controller_request_mapping != null && function_request_mapping == null) {
+        dbg("found a request mapping in " + controller);
+        // var mapping = controller_request_mapping.get("value");
+        var url = getAnnotationValue(controller_request_mapping);
+
+        log("source leading to XSS at: " + url);
+        dbg("setting thisResult.PathMatches =  " + url);
+        thisResult.PathMatches = new Array();
+        thisResult.PathMatches.push(url);
+
+        if (url.includes("{")) {
+          dbg("setting thisResult.URL.isTemplated = true");
+          isTemplated = true;
+        }
+
+        var modelAttributeAnnotation = sourceFunction.getParameterAnnotation(
+          entryPosition + 1 /* parameter seems to be off ???? */,
+          "org.springframework.web.bind.annotation.ModelAttribute"
+        );
+
+        if (modelAttributeAnnotation != null) {
+          dbg(
+            "found a @ModelAttribute annotation on " + sourceFunction.getName()
+          );
+          var modelAttribute = modelAttributeAnnotation.get("value");
+
+          log(
+            "Found an XSS at " +
+              vuln.getPrimaryFile() +
+              ":" +
+              vuln.getPrimaryLine()
+          );
+          dbg(
+            "source leading to XSS at: " +
+              url +
+              " using modelAttribute: " +
+              modelAttribute.getStrValue()
+          );
+
+          var argTypes = sourceFunction.getArgumentTypes();
+          var entryType = argTypes[entryPosition + 1]; // again +1. I think it's including 'this' in the arguments. Needs to be in parenthesis to prevent breaking JS!
+
+          var typeFields = GetFieldsOfTypeAndSupers(entryType);
+
+          dbg("creating thisResult.Parameters");
+          thisResult.Parameters = new Array();
+          thisResult.Parameters[0] = {};
+
+          log(
+            "the entry of type " +
+              entryType.getName() +
+              " has " +
+              typeFields.length +
+              " fields:"
+          );
+
+          thisResult.Parameters[0].DataType = canonicalizeType(entryType, 'JAVA');
+          // thisResult.Parameters[0].DataType = String(entryType);
+          thisResult.Parameters[0].fields = convertTypeArrayToStringArray(
+            typeFields
+          );
+
+          thisResult.Parameters[0].parameterID = getOrAddParameterID(
+            thisResult.Parameters[0]
+          );
+
+          var theseFindings = new Array();
+          theseFindings.push({
+            Category: thisResultCata,
+            FindingType: normalizeCategory(thisResultCata),
+            Origin: "SCA",
+            OriginFindingID: vuln.getInstanceIdentifier()
+          });
+
+          thisResult.Parameters = flattenParameters(thisResult.Parameters[0], theseFindings);
+
+          dbg("source rule: " + vuln.getSourceRule().getIdentifier());
+          dbg("sink rule: " + vuln.getRule().getIdentifier());
+        }
+      }
+      // TODO: Check Params for RequestParam Annotations
+    }
+    if (thisResult !== null && thisResult.Parameters !== null && thisResult.Parameters !== undefined) {
+      dbg("pushing result " + counter);
+      counter = counter + 1;
+      results.push(thisResult);
+    }
+  }
+
+  alert(JsonStringify(output));
+})();
+            ]]></ScriptDefinition>
+        </ScriptDefinitions>
+    </Rules>
+</RulePack>

@@ -1,0 +1,1 @@
+# WebInspect-scan-info

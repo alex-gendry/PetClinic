@@ -1,0 +1,788 @@
+{
+  "Version": "1.0",
+  "OriginVersion": "21.2.0.202109011147",
+  "Origin": "SCA",
+  "OriginID": "Placeholder",
+  "OriginDateTime": "2021-9-3 1:16:25 ",
+  "Description": "a description",
+  "Frameworks": ["spring"],
+  "Rules": [
+    {
+      "ID": "3A5C5D5CB624CEBB3CB5A3679F178216",
+      "PathMatches": ["/owners/*/pets/{petId}/edit"],
+      "Parameters": [
+        {
+          "Exclude": "true",
+          "DataTypes": ["DateTime"],
+          "NameMatches": ["birthDate"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3A5C5D5CB624CEBB3CB5A3679F178216"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["PUT", "POST"]
+    },
+    {
+      "ID": "0156A5A03F1233A6F15B99AD371C8ED2",
+      "PathMatches": ["/owners"],
+      "Parameters": [
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "0156A5A03F1233A6F15B99AD371C8ED2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "0156A5A03F1233A6F15B99AD371C8ED2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "0156A5A03F1233A6F15B99AD371C8ED2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "0156A5A03F1233A6F15B99AD371C8ED2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "0156A5A03F1233A6F15B99AD371C8ED2"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["GET"]
+    },
+    {
+      "ID": "9BFF295BB956CCB575F7FE83968C31C2",
+      "PathMatches": ["/owners"],
+      "Parameters": [
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "9BFF295BB956CCB575F7FE83968C31C2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "9BFF295BB956CCB575F7FE83968C31C2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "9BFF295BB956CCB575F7FE83968C31C2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "9BFF295BB956CCB575F7FE83968C31C2"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "9BFF295BB956CCB575F7FE83968C31C2"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["GET"]
+    },
+    {
+      "ID": "64572A4857D6CB4CEA05BA37A11C790F",
+      "PathMatches": ["/owners/{ownerId}/pets/new"],
+      "Parameters": [
+        {
+          "Exclude": "true",
+          "DataTypes": ["DateTime"],
+          "NameMatches": ["birthDate"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "64572A4857D6CB4CEA05BA37A11C790F"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["POST"]
+    },
+    {
+      "ID": "FAC7491B8167908174559C8365921353",
+      "PathMatches": ["/owners/*/pets/{petId}/edit/concatenateMethodUrl"],
+      "Parameters": [
+        {
+          "Exclude": "false",
+          "NameMatches": ["petName"],
+          "DataTypes": ["String"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "FAC7491B8167908174559C8365921353"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS",
+        "HEAD",
+        "TRACE"
+      ]
+    },
+    {
+      "ID": "3C2141B18BF5C916894451A140C71C8D",
+      "PathMatches": ["/owners/{ownerId}/pets/new"],
+      "Parameters": [
+        {
+          "Exclude": "true",
+          "DataTypes": ["DateTime"],
+          "NameMatches": ["birthDate"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "3C2141B18BF5C916894451A140C71C8D"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["POST"]
+    },
+    {
+      "ID": "CB5B7725C7E4AEF297C9E64C748B6583",
+      "PathMatches": ["/xss"],
+      "Parameters": [
+        {
+          "Exclude": "false",
+          "NameMatches": ["name"],
+          "DataTypes": ["String"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "CB5B7725C7E4AEF297C9E64C748B6583"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["GET"]
+    },
+    {
+      "ID": "7D45311CD55390579B1BC58C0EACE07A",
+      "PathMatches": ["/owners/*/pets/{petId}/edit"],
+      "Parameters": [
+        {
+          "Exclude": "true",
+          "DataTypes": ["DateTime"],
+          "NameMatches": ["birthDate"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "7D45311CD55390579B1BC58C0EACE07A"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["PUT", "POST"]
+    },
+    {
+      "ID": "609A5E3C6A1EC7337CCA5BBE32FE0DDF",
+      "PathMatches": ["/owners/*/pets/{petId}/edit/concatenateMethodUrl"],
+      "Parameters": [
+        {
+          "Exclude": "false",
+          "NameMatches": ["petId"],
+          "DataTypes": ["String"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Reflected",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "609A5E3C6A1EC7337CCA5BBE32FE0DDF"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS",
+        "HEAD",
+        "TRACE"
+      ]
+    },
+    {
+      "ID": "D7BB8D54743BE1ED8477E10E2748BA8C",
+      "PathMatches": ["/owners/*/pets/{petId}/edit"],
+      "Parameters": [
+        {
+          "Exclude": "true",
+          "DataTypes": ["DateTime"],
+          "NameMatches": ["birthDate"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["address"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["city"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["telephone"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["lastName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["firstName"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        },
+        {
+          "Exclude": "false",
+          "DataTypes": ["String"],
+          "NameMatches": ["name"],
+          "Findings": [
+            {
+              "Category": "Cross-Site Scripting: Poor Validation",
+              "FindingType": "XSS",
+              "Origin": "SCA",
+              "OriginFindingID": "D7BB8D54743BE1ED8477E10E2748BA8C"
+            }
+          ]
+        }
+      ],
+      "HttpMethodMatches": ["PUT", "POST"]
+    }
+  ]
+}

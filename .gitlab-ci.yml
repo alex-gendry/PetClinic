@@ -1,36 +1,42 @@
 stages:
+  - create_version
   - sast-scan
   - sast-upload
-  - docker_start
-  - dast-scan
-  - docker_stop
+#  - docker_start
+#  - dast-scan
+#  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
-  FTFY_APPLICATION: "petclinic"
-  FTFY_SSC_URL: "https://ssc.ekseed.org/ssc"
+  FTFY_APPLICATION: "PetClinic"
   SCDAST_SETTINGS: "1b17660a-f565-4913-9b76-7e42d94e918c"
+  FTFY_PROJECT: "PetClinic"
+  FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
+  FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
 
+create_version:
+  stage: create_version
+  image: docker.ekseed.org/gitlab-ci
+  script:
+    - ssc-cli -s $FTFY_SSC_HOST -t $FTFY_ENC_TOKEN create -p ${FTFY_PROJECT} -v ${CI_COMMIT_REF_NAME}
+  tags:
+    - docker
+    - linux
 
 sast-scan:
   stage: sast-scan
   script:
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -clean
-    - ./mvnw dependency:copy-dependencies
-    - ./mvnw package
-    - sudo chmod 777 -R *
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -cp lib/*.jar --exclude **/test/**/* .
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -show-files
-    - /fortify/SCA_21.2.1/bin/sourceanalyzer -verbose -debug -b "petclinic-${CI_COMMIT_BRANCH}" -scan -f "petclinic-${CI_COMMIT_BRANCH}.fpr"
+    - sourceanalyzer -b $FTFY_BUILD -clean
+    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
+    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
   artifacts:
     name: FPR_FILE
     paths:
-      - "petclinic-${CI_COMMIT_BRANCH}.fpr"
+      - $FTFY_FPR_FILE
   tags:
     - fortify-ubuntu
     - shell
-
 
 sast-upload:
   stage: sast-upload
@@ -39,7 +45,7 @@ sast-upload:
   dependencies:
     - sast-scan
   script:
-    - /fortify/SCA_21.2.1/bin/fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application petclinic -applicationVersion $CI_COMMIT_BRANCH -file "petclinic-${CI_COMMIT_BRANCH}.fpr"
+    - fortifyclient -debug -url $FTFY_SSC_HOST -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
   tags:
     - fortify-ubuntu
     - shell

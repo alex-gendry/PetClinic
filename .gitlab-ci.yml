@@ -75,7 +75,7 @@ dast-scan:
     - fcli dast scan remote sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8880/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt
     - 'scanid=$(cat start-output.txt | grep -oP "(?<=\"id\" : )\d*")'
     - echo "scan $scanid started"
-    - fcli get sc-dast scan results -i $scanid -w
+    - fcli get sc-dast scan-results -i $scanid -w
   tags :
     - docker-exec
 

@@ -21,7 +21,7 @@ create_version:
   script:
     - ssc-cli -s $FTFY_SSC_HOST -t $FTFY_ENC_TOKEN create -p ${FTFY_PROJECT} -v ${CI_COMMIT_REF_NAME}
   tags:
-    - docker
+    - docker-exec
     - linux
 
 sast-scan:

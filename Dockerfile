@@ -25,7 +25,7 @@ RUN mv apache-tomcat-${TOMCAT_VERSION} tomcat
 #COPY catalina.properties tomcat/conf
 
 #prepare SSC
-COPY target/petclinic.war /petclinic/tomcat/webapps
+COPY WARs/petclinic.war /petclinic/tomcat/webapps
 
 # Start tomcat at booting
 WORKDIR /petclinic/tomcat/bin

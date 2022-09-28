@@ -39,8 +39,8 @@ sast-scan:
     - fortify-ubuntu
     - shell
 
-sonatype:
-  stage: sonatype
+sca-scan:
+  stage: sca-scan
   script:
     - docker build -t docker.ekseed.org/${CI_COMMIT_REF_NAME} .
     - docker save docker.ekseed.org/${CI_COMMIT_REF_NAME} >> ${CI_COMMIT_REF_NAME}.tar

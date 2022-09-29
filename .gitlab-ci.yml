@@ -1,9 +1,8 @@
 stages:
   - create_version
-  - sast-scan
-  - sca-scan
+  - static
   - docker_start
-  - dast-scan
+  - dynamic
   - docker_stop
 
 variables:
@@ -27,7 +26,9 @@ create_version:
     - linux
 
 sast-scan:
-  stage: sast-scan
+  stage: static
+  needs:
+    - create_version
   script:
     - sourceanalyzer -b $FTFY_BUILD -clean
     - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
@@ -45,7 +46,9 @@ sast-scan:
     - shell
 
 sca-scan:
-  stage: sca-scan
+  stage: static
+  needs:
+    - create_version
   script:
     - docker build -t docker.ekseed.org/${CI_COMMIT_REF_NAME} .
     - docker save docker.ekseed.org/${CI_COMMIT_REF_NAME} >> ${CI_COMMIT_REF_NAME}.tar
@@ -63,9 +66,7 @@ sca-scan:
 build_n_start:
   stage: docker_start
   needs:
-    - sast-scan
-  dependencies:
-    - sast-scan
+    - create_version
   script:
     ## Login to docker registry
     - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
@@ -76,10 +77,10 @@ build_n_start:
     - shell
       
 dast-scan:
-  stage: dast-scan
-  image: docker.ekseed.org/fcli:ubuntu
+  stage: dynamic
   needs:
     - build_n_start
+  image: docker.ekseed.org/fcli:ubuntu
   script:
     - fcli auth login ssc --url ${FTFY_SSC_URL} --token "${FTFY_ENC_TOKEN}"
     - fcli dast scan remote sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8880/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt

@@ -1,15 +1,12 @@
 stages:
   - create_version
-  - static
-  - docker_start
   - dynamic
-  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
   FTFY_APPLICATION: "PetClinic"
-  SCDAST_SETTINGS: "43649822-4a65-4391-bd82-8d15886c941e"
+  SCDAST_SETTINGS: 4617581d-1664-405e-b25d-f65c21a41637
   FTFY_PROJECT: "PetClinic"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
@@ -25,56 +22,6 @@ create_version:
     - docker-exec
     - linux
 
-sast-scan:
-  stage: static
-  needs:
-    - create_version
-  script:
-    - sourceanalyzer -b $FTFY_BUILD -clean
-    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
-    - >
-      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
-      start -b $FTFY_BUILD -upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
-  artifacts:
-    name: FPR_FILE
-    paths:
-      - $FTFY_FPR_FILE
-  tags:
-    - fortify-ubuntu
-    - shell
-
-sca-scan:
-  stage: static
-  needs:
-    - create_version
-  script:
-    - docker build -t docker.ekseed.org/${CI_COMMIT_REF_NAME} .
-    - docker save docker.ekseed.org/${CI_COMMIT_REF_NAME} >> ${CI_COMMIT_REF_NAME}.tar
-    - >
-      sourceandlibscanner -auto -bt none
-      -sonatype -iqurl ${IQ_URL} -nexusauth ${IQ_TOKEN} -iqappid ${IQ_APP} -stage ${IQ_STAGE}
-      -upload -ssc ${FTFY_SSC_URL} -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME} -ssctoken ${FTFY_CI_TOKEN}
-    - rm ${CI_COMMIT_REF_NAME}.tar
-  tags:
-    - fortify-ubuntu
-    - shell
-
-
-
-build_n_start:
-  stage: docker_start
-  needs:
-    - create_version
-  script:
-    ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - sudo docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
       
 dast-scan:
   stage: dynamic
@@ -82,24 +29,8 @@ dast-scan:
     - build_n_start
   image: docker.ekseed.org/fcli:ubuntu
   script:
-    - fcli auth login ssc --url ${FTFY_SSC_URL} --token "${FTFY_ENC_TOKEN}"
-    - fcli dast scan remote sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8880/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt
-    - 'scanid=$(cat start-output.txt | grep -oP "(?<=\"id\" : )\d*")'
-    - echo "scan $scanid started"
-    - fcli get sc-dast scan-results -i $scanid -w
+    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token=${FTFY_ENC_TOKEN}
+    - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url= http://fortify-ubuntu.ekseed.org:8880/petclinic --store=dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
+    - /fcli sc-dast scan wait-for -u=completed  {?dastscan:id}
   tags :
     - docker-exec
-
-stop_app:
-  stage: docker_stop
-  needs:
-    - dast-scan
-  script:
-    ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker stop petclinic-$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
-
-

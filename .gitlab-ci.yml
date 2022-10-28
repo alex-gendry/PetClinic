@@ -9,7 +9,7 @@ variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
   FTFY_APPLICATION: "PetClinic"
-  SCDAST_SETTINGS: "43649822-4a65-4391-bd82-8d15886c941e"
+  SCDAST_SETTINGS: "be91c3ae-8099-485b-a161-36d2e8c4e4a3"
   FTFY_PROJECT: "PetClinic"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
@@ -80,13 +80,11 @@ dast-scan:
   stage: dynamic
   needs:
     - build_n_start
-  image: docker.ekseed.org/fcli:ubuntu
+  image: docker.ekseed.org/fcli:stable
   script:
-    - fcli auth login ssc --url ${FTFY_SSC_URL} --token "${FTFY_ENC_TOKEN}"
-    - fcli dast scan remote sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8880/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt
-    - 'scanid=$(cat start-output.txt | grep -oP "(?<=\"id\" : )\d*")'
-    - echo "scan $scanid started"
-    - fcli get sc-dast scan-results -i $scanid -w
+    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token=${FTFY_ENC_TOKEN}
+    - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store=dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
+    - fcli sc-dast scan wait-for -u=Complete {?dastscan:id}
   tags :
     - docker-exec
 

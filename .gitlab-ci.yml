@@ -27,7 +27,7 @@ dast-scan:
   stage: dynamic
   needs:
     - build_n_start
-  image: docker.ekseed.org/fcli
+  image: docker.ekseed.org/fcli:stable
   script:
     - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token=${FTFY_ENC_TOKEN}
     - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url= http://fortify-ubuntu.ekseed.org:8880/petclinic --store=dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"

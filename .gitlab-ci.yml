@@ -32,7 +32,7 @@ sast-scan:
   image: docker.ekseed.org/sast-client:atos
   script:
     - mvn --version
-    - mvn build
+    - mvn compile
     - >
       scancentral -sscurl https://ssc.ekseed.org/ssc -ssctoken $FTFY_ESAST_TOKEN
       start -upload -uptoken $FTFY_CI_TOKEN -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME}

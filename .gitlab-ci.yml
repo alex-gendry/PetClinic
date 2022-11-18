@@ -18,9 +18,10 @@ variables:
 
 create_version:
   stage: create_version
-  image: docker.ekseed.org/gitlab-ci:linux
+  image: docker.ekseed.org/sast-client:atos
   script:
-    - ssc-cli -s $FTFY_SSC_HOST -t $FTFY_ENC_TOKEN create -p ${FTFY_PROJECT} -v ${CI_COMMIT_REF_NAME}
+    - fcli ssc session login --url $FTFY_SSC_URL -t=$FTFY_ENC_TOKEN
+    - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
   tags:
     - docker-exec
     - linux
@@ -28,6 +29,7 @@ create_version:
 
 sast-scan:
   stage: sast-scan
+  image: docker.ekseed.org/sast-client:atos
   script:
     - >
       scancentral -sscurl https://ssc.ekseed.org/ssc -ssctoken $FTFY_ESAST_TOKEN
@@ -39,50 +41,7 @@ sast-scan:
     paths:
       - "${CI_PROJECT_NAME}-${CI_COMMIT_BRANCH}.fpr"
   tags:
-    - fortify-ubuntu
-    - shell
-
-
-package_n_start:
-  stage: docker_start
-  needs:
-    - sast-scan
-  dependencies:
-    - sast-scan
-  script:
-    - ./mvnw package
-    ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - sudo docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
-      
-dast-scan:
-  stage: dast-scan
-  image: docker.ekseed.org/fcli:ubuntu
-  needs:
-    - package_n_start
-  script:
-    - fcli auth login ssc --url ${FTFY_SSC_URL} --token "${FTFY_ENC_TOKEN}"
-    - fcli dast sc-dast start -s  ${SCDAST_SETTINGS} --url http://fortify-ubuntu.ekseed.org:8880/petclinic -n "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" --format json > start-output.txt
-    - 'scanid=$(cat start-output.txt | grep -oP "(?<=\"id\" : )\d*")'
-    - echo "scan $scanid started"
-    - fcli get sc-dast scan results -i $scanid -w
-  tags :
     - docker-exec
-
-stop_app:
-  stage: docker_stop
-  needs:
-    - dast-scan
-  script:
-    ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker stop petclinic-$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
+    - linux
 
 

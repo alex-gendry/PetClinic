@@ -1,9 +1,7 @@
 stages:
   - create_version
+  - sca-scan
   - sast-scan
-  - docker_start
-  - dast-scan
-  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
@@ -27,6 +25,21 @@ create_version:
     - linux
 
 
+sca-scan:
+  stage: sast-scan
+  image: docker.ekseed.org/sast-client:atos
+  script:
+    - echo "sourceandlibscanner -auto -bt none
+      -sonatype -iqurl ${IQ_URL} -nexusauth ${IQ_TOKEN} -iqappid ${IQ_APP} -stage ${IQ_STAGE}
+      -upload -ssc ${FTFY_SSC_URL} -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME} -ssctoken ${FTFY_CI_TOKEN}"
+    - sourceandlibscanner -auto -bt none
+      -sonatype -iqurl ${IQ_URL} -nexusauth ${IQ_TOKEN} -iqappid ${IQ_APP} -stage ${IQ_STAGE}
+      -upload -ssc ${FTFY_SSC_URL} -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME} -ssctoken ${FTFY_CI_TOKEN} 
+  tags:
+    - docker-exec
+    - linux
+
+
 sast-scan:
   stage: sast-scan
   image: docker.ekseed.org/sast-client:atos
@@ -36,12 +49,7 @@ sast-scan:
     - >
       scancentral -sscurl https://ssc.ekseed.org/ssc -ssctoken $FTFY_ESAST_TOKEN
       start -upload -uptoken $FTFY_CI_TOKEN -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME}
-      -block -o -f ${CI_PROJECT_NAME}-$CI_COMMIT_BRANCH.fpr  --skipBuild --build-tool mvn --build-file pom.xml
-
-  artifacts:
-    name: FPR_FILE
-    paths:
-      - "${CI_PROJECT_NAME}-${CI_COMMIT_BRANCH}.fpr"
+      --skipBuild --build-tool mvn --build-file pom.xml
   tags:
     - docker-exec
     - linux

@@ -28,8 +28,8 @@ sca-scan:
   stage: sast-scan
   image: docker.ekseed.org/sast-client:java-17
   script:
-    - echo "iq-integration -iqurl ${IQ_URL}   -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}"
-    - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} pom.xml 
+    - mvn dependency:copy-dependencies
+    - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency
     - iq-integration -iqurl ${IQ_URL}   -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
     - docker-exec

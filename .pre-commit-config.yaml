@@ -8,3 +8,5 @@ repos:
             entry: secrets-scanning.sh
             language: script
             types: [bash]
+            always_run: true
+

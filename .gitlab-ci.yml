@@ -18,9 +18,10 @@ variables:
 
 create_version:
   stage: create_version
-  image: docker.ekseed.org/gitlab-ci:linux
+  image: docker.ekseed.org/sast-client:atos
   script:
-    - ssc-cli -s $FTFY_SSC_HOST -t $FTFY_ENC_TOKEN create -p ${FTFY_PROJECT} -v ${CI_COMMIT_REF_NAME}
+    - fcli ssc session login --url $FTFY_SSC_URL -t=$FTFY_ENC_TOKEN
+    - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
   tags:
     - docker-exec
     - linux

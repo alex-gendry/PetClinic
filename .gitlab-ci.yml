@@ -47,20 +47,15 @@ sast-scan:
     - shell
 
 sca-scan:
-  stage: static
-  needs:
-    - create_version
+  stage: sast-scan
+  image: docker.ekseed.org/sast-client:java-17
   script:
-    - docker build -t docker.ekseed.org/${CI_COMMIT_REF_NAME} .
-    - docker save docker.ekseed.org/${CI_COMMIT_REF_NAME} >> ${CI_COMMIT_REF_NAME}.tar
-    - >
-      sourceandlibscanner -auto -bt none
-      -sonatype -iqurl ${IQ_URL} -nexusauth ${IQ_TOKEN} -iqappid ${IQ_APP} -stage ${IQ_STAGE}
-      -upload -ssc ${FTFY_SSC_URL} -application ${FTFY_PROJECT} -version ${CI_COMMIT_REF_NAME} -ssctoken ${FTFY_CI_TOKEN}
-    - rm ${CI_COMMIT_REF_NAME}.tar
+    - mvn dependency:copy-dependencies
+    - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
+    - iq-integration -iqurl ${IQ_URL}   -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
-    - fortify-ubuntu
-    - shell
+    - docker-exec
+    - linux
 
 
 

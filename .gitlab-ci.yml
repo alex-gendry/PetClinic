@@ -47,7 +47,7 @@ sast-scan:
     - shell
 
 sca-scan:
-  stage: sast-scan
+  stage: static
   image: docker.ekseed.org/sast-client:java-17
   script:
     - mvn dependency:copy-dependencies

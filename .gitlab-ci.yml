@@ -19,7 +19,7 @@ scan:
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
     - >
-      FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_PAT} 
+      FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -userCredentials ${FOD_USERNAME} ${FOD_PAT} 
                 -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
   artifacts:
     paths:

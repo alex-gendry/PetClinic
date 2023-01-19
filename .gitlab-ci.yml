@@ -18,7 +18,7 @@ scan:
     - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
-    - FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -tenantCode ${FOD_TENANT} -userCredentials ${FOD_USERNAME} ${FOD_PAT} -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
+    - FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_API_CREDS} ${FOD_PAT} -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
   artifacts:
     paths:
       - mypayload.zip

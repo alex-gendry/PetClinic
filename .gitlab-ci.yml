@@ -1,9 +1,5 @@
 stages:
-  - create_version
   - static
-  - docker_start
-  - dynamic
-  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
@@ -16,82 +12,14 @@ variables:
   IQ_APP: "petclinic"
   IQ_STAGE: "build"
 
-create_version:
-  stage: create_version
-  image: docker.ekseed.org/sast-client:atos
-  script:
-    - fcli ssc session login --url $FTFY_SSC_URL -t=$FTFY_ENC_TOKEN
-    - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
-  tags:
-    - docker-exec
-    - linux
-
-sast-scan:
+scan:
   stage: static
-  needs:
-    - create_version
+  image: fortifydocker/fortify-ci-tools
   script:
-    - sourceanalyzer -b $FTFY_BUILD -clean
-    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
-    - >
-      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
-      start -b $FTFY_BUILD -upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+    - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
   artifacts:
-    name: FPR_FILE
-    paths:
-      - $FTFY_FPR_FILE
-  tags:
-    - fortify-ubuntu
-    - shell
-
-sca-scan:
-  stage: static
-  image: docker.ekseed.org/sast-client:java-17
-  script:
-    - mvn dependency:copy-dependencies
-    - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
-#    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
+    - mypayload.zip
   tags:
     - docker-exec
     - linux
-
-build_n_start:
-  stage: docker_start
-  needs:
-    - create_version
-  script:
-    ## Login to docker registry
-    - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
-      
-dast-scan:
-  stage: dynamic
-  needs:
-    - build_n_start
-  image: docker.ekseed.org/fcli:main
-  script:
-    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ssc-ci-token ${FTFY_ENC_TOKEN}
-    - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
-    - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'
-  allow_failure: true
-  tags :
-    - docker-exec
-
-stop_app:
-  stage: docker_stop
-  needs:
-    - dast-scan
-  script:
-    ## Login to docker registry
-    - docker stop petclinic-$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
-
-

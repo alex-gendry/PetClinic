@@ -14,10 +14,11 @@ variables:
 
 scan:
   stage: static
-  image: fortifydocker/fortify-ci-tools
+  image: docker.ekseed.org/sast-client:22.2.0-linux
   script:
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
+    - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
   artifacts:
     paths:
       - mypayload.zip

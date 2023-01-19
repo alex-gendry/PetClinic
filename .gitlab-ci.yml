@@ -9,8 +9,7 @@ variables:
   FTFY_PROJECT: "PetClinic"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
-  IQ_APP: "petclinic"
-  IQ_STAGE: "build"
+  RELEASE_ID: 722302
 
 scan:
   stage: static
@@ -18,7 +17,11 @@ scan:
   script:
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
+    - ls -al
     - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
+    - >
+      FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_PAT} 
+                -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
   artifacts:
     paths:
       - mypayload.zip

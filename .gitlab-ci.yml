@@ -19,7 +19,8 @@ scan:
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
   artifacts:
-    - mypayload.zip
+    paths:
+      - mypayload.zip
   tags:
     - docker-exec
     - linux

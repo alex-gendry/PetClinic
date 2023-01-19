@@ -79,7 +79,7 @@ dast-scan:
     - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ssc-ci-token ${FTFY_ENC_TOKEN}
     - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
     - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'
-  allow_failure: true
+#  allow_failure: true
   tags :
     - docker-exec
 

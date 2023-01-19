@@ -15,9 +15,8 @@ scan:
   stage: static
   image: docker.ekseed.org/sast-client:22.2.0-linux
   script:
-    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
-    - ls -al
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
     - >
       FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_PAT} 

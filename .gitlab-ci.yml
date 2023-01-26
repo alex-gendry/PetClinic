@@ -15,12 +15,16 @@ variables:
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
   IQ_APP: "petclinic"
   IQ_STAGE: "build"
+  FCLI_SSC_URL: $FTFY_SSC_URL
+  FCLI_DEFAULT_SSC_TOKEN: $FTFY_ENC_TOKEN
+  FCLI_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
+  FCLI_SC_SAST_SCAN_CI_TOKEN: $FTFY_ESAST_TOKEN
 
 create_version:
   stage: create_version
   image: fortifydocker/fortify-ci-tools
   script:
-    - fcli ssc session login --url $FTFY_SSC_URL -t=$FTFY_ENC_TOKEN
+    - fcli ssc session login
     - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
   tags:
     - docker-exec
@@ -36,7 +40,22 @@ sast-scan:
 
   # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
   script:
-    - 'scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN start $SCANCENTRAL_BUILD_OPTS -upload -application $SSC_APP -version $SSC_PV -uptoken $FTFY_ESAST_TOKEN -Dcom.fortify.sca.rules.enable_wi_correlation'
+    - fcli ssc session login
+    - fcli sc-sast session login
+
+    # Package sources & run SAST scan
+    - scancentral package -bt mvn -o package.zip 
+    - fcli sc-sast scan start package package.zip --sensor-version 22.1 --appversion {?myVersion:id} --store '?'
+    
+    # Wait for SAST scan to complete
+    - fcli sc-sast scan wait-for-artifact '?' -i 30s
+        
+    - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_SSC_URL --ssc.authToken="$FCLI_DEFAULT_SSC_TOKEN" --ssc.version.id=$(fcli config var contents get myVersion -o expr={id})
+
+    # Clean up tokens, session variables, ...
+    - fcli sc-sast session logout
+    - fcli ssc session logout
+
 
   needs:
     - create_version

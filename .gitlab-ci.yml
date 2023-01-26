@@ -17,7 +17,7 @@ variables:
   IQ_STAGE: "build"
   FCLI_DEFAULT_SSC_URL: $FTFY_SSC_URL
   FCLI_DEFAULT_SSC_TOKEN: $FTFY_ENC_TOKEN
-  FCLI_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
+  FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
   FCLI_SC_SAST_SCAN_CI_TOKEN: $FTFY_ESAST_TOKEN
 
 create_version:
@@ -50,7 +50,7 @@ sast-scan:
     # Wait for SAST scan to complete
     - fcli sc-sast scan wait-for-artifact '?' -i 30s
         
-    - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_SSC_URL --ssc.authToken="$FCLI_DEFAULT_SSC_TOKEN" --ssc.version.id=$(fcli config var contents get myVersion -o expr={id})
+    - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_DEFAULT_SSC_URL --ssc.authToken="$FCLI_DEFAULT_SSC_TOKEN" --ssc.version.id=$(fcli config var contents get myVersion -o expr={id})
 
     # Clean up tokens, session variables, ...
     - fcli sc-sast session logout

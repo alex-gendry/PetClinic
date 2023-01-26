@@ -29,14 +29,23 @@ create_version:
 sast-scan:
   stage: static
   image: fortifydocker/fortify-ci-tools
+  variables:
+    SCANCENTRAL_BUILD_OPTS: "-bt mvn"
+    SSC_APP: $FTFY_PROJECT
+    SSC_PV: $CI_COMMIT_REF_NAME
+
+  # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
+  script:
+    - 'scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN start $SCANCENTRAL_BUILD_OPTS -upload -application $SSC_APP -version $SSC_PV -uptoken $FTFY_ESAST_TOKEN -Dcom.fortify.sca.rules.enable_wi_correlation'
+
   needs:
     - create_version
-  script:
+#  script:
 #    - sourceanalyzer -b $FTFY_BUILD -clean
 #    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
-    - >
-      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
-      start -b $FTFY_BUILD -bt mvn -upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan  -Dcom.fortify.sca.rules.enable_wi_correlation
+#    - >
+#      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
+#      start -b $FTFY_BUILD-upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan  -Dcom.fortify.sca.rules.enable_wi_correlation
 #    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
 #    - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
   tags:

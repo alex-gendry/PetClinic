@@ -38,8 +38,6 @@ sast-scan:
     
     # Wait for SAST scan to complete
     - fcli sc-sast scan wait-for '?' -i 30s
-        
-    - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_DEFAULT_SSC_URL --ssc.authToken="$FTFY_ENC_TOKEN" --ssc.version.name="${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}"
 
     # Clean up tokens, session variables, ...
     - fcli sc-sast session logout
@@ -56,6 +54,23 @@ sast-scan:
   tags:
     - docker-exec
     - linux
+
+gitlab-security-sast:
+  image: fortifydocker/fortify-vulnerability-exporter
+  variables:
+    export_config: /config/SSCToGitLab.yml
+    ssc_baseUrl: ${FTFY_SSC_URL}
+    ssc_authToken: ${FTFY_ENC_TOKEN}
+    ssc_version_name: ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}
+    # Or use ssc_version_id: 1234
+  script: 
+  - echo Script entry is required but not used
+  allow_failure: true
+  artifacts:
+    reports:
+      sast: gl-fortify-sast.json
+      dast: gl-fortify-dast.json
+      dependency_scanning: gl-fortify-depscan.json
 
 sca-scan:
   stage: static

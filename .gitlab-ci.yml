@@ -1,5 +1,4 @@
 stages:
-  - create_version
   - static
   - docker_start
   - dynamic
@@ -21,28 +20,17 @@ variables:
   FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
   FCLI_SC_SAST_SCAN_CI_TOKEN: $FTFY_ENC_TOKEN
 
-create_version:
-  stage: create_version
-  image: fortifydocker/fortify-ci-tools
-  script:
-    - fcli ssc session login
-    - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
-  tags:
-    - docker-exec
-    - linux
-
 sast-scan:
   stage: static
   image: fortifydocker/fortify-ci-tools
-  variables:
-    SCANCENTRAL_BUILD_OPTS: "-bt mvn"
-    SSC_APP: $FTFY_PROJECT
-    SSC_PV: $CI_COMMIT_REF_NAME
 
   # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
   script:
     - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN
     - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
+
+    # Create appversion    
+    - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources & run SAST scan
     - scancentral package -bt mvn -o package.zip 
@@ -57,9 +45,6 @@ sast-scan:
     - fcli sc-sast session logout
     - fcli ssc session logout
 
-
-  needs:
-    - create_version
 #  script:
 #    - sourceanalyzer -b $FTFY_BUILD -clean
 #    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
@@ -85,8 +70,6 @@ sca-scan:
 
 build_n_start:
   stage: docker_start
-  needs:
-    - create_version
   script:
     ## Login to docker registry
     - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}

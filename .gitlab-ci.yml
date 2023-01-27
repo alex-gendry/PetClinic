@@ -56,6 +56,7 @@ sast-scan:
     - linux
 
 gitlab-security-sast:
+  stage: static
   image: fortifydocker/fortify-vulnerability-exporter
   variables:
     export_config: /config/SSCToGitLab.yml

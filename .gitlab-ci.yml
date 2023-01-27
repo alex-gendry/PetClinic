@@ -40,8 +40,8 @@ sast-scan:
     - fcli sc-sast scan wait-for '?' -i 30s
 
     # Clean up tokens, session variables, ...
-    - fcli sc-sast session logout
-    - fcli ssc session logout
+    - fcli sc-sast session logout --no-revoke-token
+    - fcli ssc session logout --no-revoke-token
 
 #  script:
 #    - sourceanalyzer -b $FTFY_BUILD -clean

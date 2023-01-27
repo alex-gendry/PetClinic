@@ -59,7 +59,7 @@ sast-scan:
 
 sca-scan:
   stage: static
-  image: fortifydocker/fortify-ci-tools
+  image: sonatype/nexus-iq-cli
   script:
     - mvn dependency:copy-dependencies
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml

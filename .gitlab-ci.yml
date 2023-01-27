@@ -41,15 +41,15 @@ sast-scan:
 
   # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
   script:
-    - fcli ssc session login
-    - fcli sc-sast session login
+    - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN
+    - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 
     # Package sources & run SAST scan
     - scancentral package -bt mvn -o package.zip 
     - fcli sc-sast scan start -p package.zip --sensor-version 22.1 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete
-    - fcli sc-sast scan wait-for-artifact '?' -i 30s
+    - fcli sc-sast scan wait-for '?' -i 30s
         
     - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_DEFAULT_SSC_URL --ssc.authToken="$FCLI_DEFAULT_SSC_TOKEN" --ssc.version.name="${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}"
 

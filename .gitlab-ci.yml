@@ -71,13 +71,16 @@ gitlab-security-sast:
     reports:
       sast: gl-fortify-sast.json
       dast: gl-fortify-dast.json
-      dependency_scanning: gl-fortify-depscan.json
+      dependency_scanning: gl-fortify-depscan.
+  tags:
+    - docker-exec
+    - linux
 
 sca-scan:
   stage: static
   image: sonatype/nexus-iq-cli
   script:
-    - mvn dependency:copy-dependencies
+#    - mvn dependency:copy-dependencies
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
 #    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:

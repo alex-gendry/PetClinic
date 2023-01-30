@@ -8,7 +8,7 @@ variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
   FTFY_APPLICATION: "PetClinic"
-  SCDAST_SETTINGS: "be91c3ae-8099-485b-a161-36d2e8c4e4a3"
+  SCDAST_SETTINGS: "b8ab112c-023c-461b-b6a6-5e2c8c0d7fa9"
   FTFY_PROJECT: "PetClinic"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
@@ -38,12 +38,10 @@ sast-scan:
     
     # Wait for SAST scan to complete
     - fcli sc-sast scan wait-for '?' -i 30s
-        
-    - FortifyVulnerabilityExporter SSCToGitLabSAST --ssc.baseUrl=$FCLI_DEFAULT_SSC_URL --ssc.authToken="$FCLI_DEFAULT_SSC_TOKEN" --ssc.version.name="${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}"
 
     # Clean up tokens, session variables, ...
-    - fcli sc-sast session logout
-    - fcli ssc session logout
+    - fcli sc-sast session logout --no-revoke-token
+    - fcli ssc session logout --no-revoke-token
 
 #  script:
 #    - sourceanalyzer -b $FTFY_BUILD -clean
@@ -57,13 +55,34 @@ sast-scan:
     - docker-exec
     - linux
 
+gitlab-security-sast:
+  stage: static
+  image: fortifydocker/fortify-vulnerability-exporter
+  variables:
+    export_config: /config/SSCToGitLab.yml
+    ssc_baseUrl: ${FTFY_SSC_URL}
+    ssc_authToken: ${FTFY_ENC_TOKEN}
+    ssc_version_name: ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}
+    # Or use ssc_version_id: 1234
+  script: 
+  - echo Script entry is required but not used
+  allow_failure: true
+  artifacts:
+    reports:
+      sast: gl-fortify-sast.json
+      dast: gl-fortify-dast.json
+      dependency_scanning: gl-fortify-depscan.
+  tags:
+    - docker-exec
+    - linux
+
 sca-scan:
   stage: static
-  image: fortifydocker/fortify-ci-tools
+  image: docker.ekseed.org/sast-client:java-17 
   script:
     - mvn dependency:copy-dependencies
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
-#    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
+    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_ENC_TOKEN} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
     - docker-exec
     - linux

@@ -55,27 +55,6 @@ sast-scan:
     - docker-exec
     - linux
 
-gitlab-security-sast:
-  stage: static
-  image: fortifydocker/fortify-vulnerability-exporter
-  variables:
-    export_config: /config/SSCToGitLab.yml
-    ssc_baseUrl: ${FTFY_SSC_URL}
-    ssc_authToken: ${FTFY_ENC_TOKEN}
-    ssc_version_name: ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME}
-    # Or use ssc_version_id: 1234
-  script: 
-  - echo Script entry is required but not used
-  allow_failure: true
-  artifacts:
-    reports:
-      sast: gl-fortify-sast.json
-      dast: gl-fortify-dast.json
-      dependency_scanning: gl-fortify-depscan.
-  tags:
-    - docker-exec
-    - linux
-
 sca-scan:
   stage: static
   image: docker.ekseed.org/sast-client:java-17 

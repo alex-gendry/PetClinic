@@ -34,7 +34,7 @@ sast-scan:
 
     # Package sources & run SAST scan
     - scancentral package -bt mvn -o package.zip 
-    - fcli sc-sast scan start -p package.zip --sensor-version 22.1 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?' -i 30s
+    - fcli sc-sast scan start -p package.zip --sensor-version 22.1 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete
     - fcli sc-sast scan wait-for '?' -i 30s
@@ -85,7 +85,7 @@ dast-scan:
   script:
     - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ssc-ci-token ${FTFY_ENC_TOKEN}
     - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
-    - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'
+    - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
 #  allow_failure: true
   tags :
     - docker-exec

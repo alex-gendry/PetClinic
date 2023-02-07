@@ -26,8 +26,8 @@ sast-scan:
 
   # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
   script:
-    - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN
-    - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_ENC_TOKEN -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
+    - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
+    - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 
     # Create appversion    
     - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
@@ -61,7 +61,7 @@ sca-scan:
   script:
     - mvn dependency:copy-dependencies
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
-    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_DEC} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
+    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
     - docker-exec
     - linux

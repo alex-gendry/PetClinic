@@ -28,6 +28,10 @@ build:
     - ls -al
     - mvn compile
     - ls -al
+  artifacts:
+    paths:
+      - lib
+      - target
   tags:
     - docker-exec
     - linux

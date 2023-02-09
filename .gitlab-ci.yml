@@ -1,9 +1,6 @@
 stages:
   - build
   - static
-  - docker_start
-  - dynamic
-  - docker_stop
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
@@ -65,40 +62,6 @@ sast-scan:
   tags:
     - docker-exec
     - linux
-    
-build_n_start:
-  stage: docker_start
-  script:
-    ## Login to docker registry
-    - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - docker run -d --name petclinic-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
-      
-dast-scan:
-  stage: dynamic
-  needs:
-    - build_n_start
-  image: fortifydocker/fortify-ci-tools
-  script:
-    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ssc-ci-token ${FTFY_ENC_TOKEN}
-    - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
-    - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
-#  allow_failure: true
-  tags :
-    - docker-exec
-
-stop_app:
-  stage: docker_stop
-  needs:
-    - dast-scan
-  script:
-    ## Login to docker registry
-    - docker stop petclinic-$CI_COMMIT_SHORT_SHA
-  tags:
-    - fortify-ubuntu
-    - shell
+  
 
 

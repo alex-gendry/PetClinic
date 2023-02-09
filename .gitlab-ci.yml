@@ -1,4 +1,5 @@
 stages:
+  - mvn
   - static
   - docker_start
   - dynamic
@@ -20,6 +21,17 @@ variables:
   FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
   FCLI_SC_SAST_SCAN_CI_TOKEN: $FTFY_ENC_TOKEN
 
+mvn:
+  stage: mvn
+  image: maven
+  script:
+    - ls -al
+    - mvn build
+    - ls -al
+  tags:
+    - docker-exec
+    - linux
+
 sast-scan:
   stage: static
   image: fortifydocker/fortify-ci-tools
@@ -33,7 +45,7 @@ sast-scan:
     - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources & run SAST scan
-    - scancentral package -bt mvn -o package.zip 
+    - scancentral package -bt none -o package.zip 
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete
@@ -42,15 +54,9 @@ sast-scan:
     # Clean up tokens, session variables, ...
     - fcli sc-sast session logout --no-revoke-token
     - fcli ssc session logout --no-revoke-token
-
-#  script:
-#    - sourceanalyzer -b $FTFY_BUILD -clean
-#    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -cp "petclinic-3.0/lib/*.jar" petclinic-3.0/src
-#    - >
-#      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
-#      start -b $FTFY_BUILD-upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan  -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-#    - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
+  artifacts:
+    paths:
+      - package.zip
   tags:
     - docker-exec
     - linux

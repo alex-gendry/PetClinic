@@ -22,6 +22,7 @@ scan:
   artifacts:
     paths:
       - mypayload.zip
+      - .debricked-maven-dependencies.tgf
   tags:
     - docker-exec
     - linux

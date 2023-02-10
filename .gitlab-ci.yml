@@ -23,7 +23,7 @@ build:
   image: maven
   script:
     - ls -al
-    - mvn compile
+    - mvn install
     - mvn dependency:copy-dependencies
     - ls -al
   artifacts:

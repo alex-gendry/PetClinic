@@ -24,6 +24,7 @@ build:
   script:
     - ls -al
     - mvn compile
+    - mvn dependency:copy-dependencies
     - ls -al
   artifacts:
     paths:
@@ -47,7 +48,7 @@ sast-scan:
     - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources & run SAST scan
-    - scancentral package -bt none -o package.zip -exclude src
+    - scancentral package -bt none -o package.zip
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete

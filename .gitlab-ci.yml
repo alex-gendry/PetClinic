@@ -30,7 +30,7 @@ sast-scan:
     - fcli ssc appversion create ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources & run SAST scan
-    - scancentral package -bt mvn -bc install -o package.zip
+    - scancentral package -bt mvn -bc compile -o package.zip
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete

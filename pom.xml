@@ -543,7 +543,7 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>${postgresql-driver.version}</version>
+                fod-gl-ast    <version>${postgresql-driver.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

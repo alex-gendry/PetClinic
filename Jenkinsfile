@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 container('fortify-ci-tools') {
-                    ls -al /usr/bin
+                    sh "ls -al /usr/bin"
                 }
             }
         }

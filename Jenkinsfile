@@ -31,8 +31,8 @@ pipeline {
                                         scanCentral: 'Maven',
                                         scanCentralBuildCommand: 'mvn install',
                                         scanCentralBuildFile: 'pom.xml',
-                                        scanCentralBuildToolVersion: '', s
-                                        canCentralIncludeTests: '',
+                                        scanCentralBuildToolVersion: '',
+                                        scanCentralIncludeTests: '',
                                         scanCentralRequirementFile: '',
                                         scanCentralSkipBuild: '',
                                         scanCentralVirtualEnv: '',

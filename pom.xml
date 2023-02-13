@@ -8,7 +8,8 @@
 
     <name>Spring Framework Petclinic</name>
     <packaging>war</packaging>
-    <description>A Spring Framework application based on JSP, Spring MVC, Spring Data JPA, Hibernate and JDBC</description>
+    <description>A Spring Framework application based on JSP, Spring MVC, Spring Data JPA, Hibernate and JDBC
+    </description>
     <url>https://spring-petclinic.github.io/</url>
 
     <properties>
@@ -423,7 +424,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+                    <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory
+                    </wroManagerFactory>
                     <cssDestinationFolder>${project.build.directory}/petclinic/resources/css</cssDestinationFolder>
                     <wroFile>${basedir}/src/main/wro/wro.xml</wroFile>
                     <extraConfigFile>${basedir}/src/main/wro/wro.properties</extraConfigFile>
@@ -543,12 +545,12 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                fod-gl-ast    <version>${postgresql-driver.version}</version>
+                    <version>${postgresql-driver.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
-   </profiles>
+    </profiles>
 
     <repositories>
         <repository>

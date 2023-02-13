@@ -12,7 +12,7 @@ scan:
     - fcli fod session login --url $FOD_API_URL --tenant $FOD_TENANT -u $FOD_USERNAME -p $FOD_PAT
 
     # Create Application Release
-    - fcli fod release create "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
+    - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     # Package Creation
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf

@@ -15,7 +15,7 @@ scan:
     - fcli fod release create "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     # Package Creation
-    #    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt mvn -bc compile -o package.zip
 
     # Upload

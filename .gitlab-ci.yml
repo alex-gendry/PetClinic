@@ -16,12 +16,12 @@ scan:
 
     # Package Creation
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-#    - scancentral package -bt mvn -bc compile -o package.zip
-#
-#    # Upload
-#    - fcli fod sast setup "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --assessment Static --frequency Subscription --audit-preference Automated --technology-stack JAVA/J2EE/Kotlin --language-level 1.8 --oss --store sast_config
-#    - fcli fod sast start "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --purchase-entitlement  --in-progress Queue -f package.zip --store '?'
-#    - fcli fod sast wait-for '?'  -i 30s
+    - scancentral package -bt mvn -bc install -o package.zip
+
+    # Upload
+    - fcli fod sast setup "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --assessment Static --frequency Subscription --audit-preference Automated --technology-stack JAVA/J2EE/Kotlin --language-level 1.8 --oss --store sast_config
+    - fcli fod sast start "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --purchase-entitlement  --in-progress Queue -f package.zip --store '?'
+    - fcli fod sast wait-for '?'  -i 30s
 
   artifacts:
     paths:

@@ -16,7 +16,8 @@ scan:
 
     # Package Creation
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - scancentral package -bt mvn -bc install -o package.zip
+    - mvn install
+    - scancentral package -bt none -o package.zip
 
     # Upload
     - fcli fod sast setup "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --assessment Static --frequency Subscription --audit-preference Automated --technology-stack JAVA/J2EE/Kotlin --language-level 1.8 --oss --store sast_config

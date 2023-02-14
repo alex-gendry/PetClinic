@@ -5,14 +5,14 @@ pipeline {
         stage('dependencies') {
             steps {
                 container('fortify-ci-tools') {
-//                     sh 'mvn package'
                     sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                 }
             }
         }
         stage('fod') {
             steps {
-                fodStaticAssessment applicationName: 'PetClinic [AG]',
+                container('fortify-ci-tools') {
+                    fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',
                                     attributes: '',

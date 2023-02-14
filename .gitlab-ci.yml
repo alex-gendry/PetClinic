@@ -37,6 +37,7 @@ sast-scan:
     - cp -r target/classes $PACKAGE_FOLDER/lib/classes
     - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
     - cd $PACKAGE_FOLDER
+    - ls -al
     - scancentral package -bt none -o package.zip
 
     # Run Scan

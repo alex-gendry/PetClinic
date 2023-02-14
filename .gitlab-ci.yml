@@ -26,7 +26,7 @@ sast-scan:
     - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 
     # Create appversion    
-    - fcli ssc appversion create ${$CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
+    - fcli ssc appversion create ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources
     - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf

@@ -26,7 +26,7 @@ scan:
     - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
     - cd $PACKAGE_FOLDER
     - ls -al
-    - scancentral package -bt none -targs "-cp lib" -o package.zip
+    - scancentral package -bt none -o package.zip
 
     # Upload
     - fcli fod sast setup "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --assessment Static --frequency Subscription --audit-preference Automated --technology-stack JAVA/J2EE/Kotlin --language-level 1.8 --oss --store sast_config

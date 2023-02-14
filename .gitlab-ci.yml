@@ -55,7 +55,8 @@ sast-scan:
     paths:
       - package.zip
   tags:
-    - docker-exec
+    - kubernetes
+    - docker
     - linux
   
 

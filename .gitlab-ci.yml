@@ -52,7 +52,8 @@ sast-scan:
 #    - sourceanalyzer -b $FTFY_BUILD -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
 #    - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN uploadFPR -application ${FTFY_PROJECT} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
   tags:
-    - docker-exec
+    - kubernetes
+    - docker
     - linux
 
 sca-scan:
@@ -63,7 +64,8 @@ sca-scan:
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
     - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${FTFY_PROJECT} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
-    - docker-exec
+    - kubernetes
+    - docker
     - linux
 
 build_n_start:
@@ -88,7 +90,9 @@ dast-scan:
     - fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
 #  allow_failure: true
   tags :
-    - docker-exec
+    - kubernetes
+    - docker
+    - linux
 
 stop_app:
   stage: docker_stop

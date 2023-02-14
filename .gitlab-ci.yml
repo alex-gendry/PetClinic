@@ -18,8 +18,8 @@ scan:
 
     # Package Creation
     - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - mvn package
-    - mvn dependency:copy-dependencies -DoutputDirectory $PACKAGE_FOLDER/lib
+    - mvn package -DskipTests
+    - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/lib
     - cp src $PACKAGE_FOLDER/src
     - cp target/site/jacoco/* $PACKAGE_FOLDER/src/site
     - cp target/classes $PACKAGE_FOLDER/lib/classes

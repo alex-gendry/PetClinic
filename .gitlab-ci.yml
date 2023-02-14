@@ -33,14 +33,14 @@ sast-scan:
     # Package sources
     - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf
     - mvn package -DskipTests
-    - mvn dependency:copy-dependencies #-DoutputDirectory=$PACKAGE_FOLDER/lib
-#    - cp -r src $PACKAGE_FOLDER/src
-#    #    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
-#    - cp -r target/classes $PACKAGE_FOLDER/lib/classes
-#    - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
-#    - cd $PACKAGE_FOLDER
-#    - ls -al
-    - scancentral package -bt none -o package.zip
+    - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/lib
+    - cp -r src $PACKAGE_FOLDER/src
+    #    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
+    - cp -r target/classes $PACKAGE_FOLDER/lib/classes
+    - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
+    - cd $PACKAGE_FOLDER
+    - ls -al
+    - scancentral package -bt none -targs "-cp Libs/**/*.jar Src/**/*.*"  -o package.zip
 
     # Run Scan
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'

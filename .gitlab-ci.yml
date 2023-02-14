@@ -21,6 +21,8 @@ sast-scan:
   stage: static
   image: fortifydocker/fortify-ci-tools
   # Run Fortify ScanCentral Client. SSC_URL and SSC_TOKEN are expected as GitLab CICD Variables in the template (masking recommended).
+  variables:
+    PACKAGE_FOLDER: package
   script:
     - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
     - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN

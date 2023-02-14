@@ -20,10 +20,10 @@ scan:
     - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf
     - mvn package -DskipTests
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/lib
-    - cp src $PACKAGE_FOLDER/src
-    - cp target/site/jacoco/* $PACKAGE_FOLDER/src/site
-    - cp target/classes $PACKAGE_FOLDER/lib/classes
-    - cp target/petclinic.war $PACKAGE_FOLDER/petclinic.war
+    - cp -r src $PACKAGE_FOLDER/src
+    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
+    - cp -r target/classes $PACKAGE_FOLDER/lib/classes
+    - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
     - cd $PACKAGE_FOLDER
     - scancentral package -bt none -targs "-cp lib" -o package.zip
 

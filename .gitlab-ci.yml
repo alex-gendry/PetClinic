@@ -40,7 +40,7 @@ sast-scan:
     - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
     - cd $PACKAGE_FOLDER
     - ls -al
-    - scancentral package -bt none -o package.zip
+    - scancentral package -bt none -targs "-cp Libs"  -o package.zip
 
     # Run Scan
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
@@ -49,8 +49,8 @@ sast-scan:
     - fcli sc-sast scan wait-for '?' -i 30s
 
     # Clean up tokens, session variables, ...
-    - fcli sc-sast session logout --no-revoke-token
-    - fcli ssc session logout --no-revoke-token
+    - fcli sc-sast session logout
+    - fcli ssc session logout
   artifacts:
     paths:
       - package.zip

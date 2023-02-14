@@ -21,10 +21,11 @@ scan:
     - mvn package -DskipTests
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/lib
     - cp -r src $PACKAGE_FOLDER/src
-    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
+#    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
     - cp -r target/classes $PACKAGE_FOLDER/lib/classes
     - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
     - cd $PACKAGE_FOLDER
+    - ls -al
     - scancentral package -bt none -targs "-cp lib" -o package.zip
 
     # Upload

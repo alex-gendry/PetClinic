@@ -37,7 +37,7 @@ sast-scan:
     - scancentral package -bt none  -o package.zip
 
     # Run Scan
-    - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
+    - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete
     - fcli sc-sast scan wait-for '?' -i 30s

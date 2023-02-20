@@ -27,10 +27,10 @@ scan:
     - zip -r ../package.zip .
     - cd ..
 
-    - FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_API_CREDS} -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
+    - FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_API_CREDS} -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation package.zip
   artifacts:
     paths:
-      - mypayload.zip
+      - package.zip
       - .debricked-maven-dependencies.tgf
   tags:
     - docker-exec

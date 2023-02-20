@@ -3,6 +3,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: docker.ekseed.org
+  PACKAGE_FOLDER: package
 
 scan:
   stage: static
@@ -22,7 +23,7 @@ scan:
     - cp -r src/* $PACKAGE_FOLDER/Src
     - ls -al $PACKAGE_FOLDER
     - cd $PACKAGE_FOLDER
-    - zip -r ../package.zip .
+    - zip ../package.zip .
     - cd ..
 
     # Upload

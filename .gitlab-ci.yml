@@ -39,7 +39,8 @@ sast-scan:
     - cp -r src/* $PACKAGE_FOLDER/Src
     #    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
     - ls -al $PACKAGE_FOLDER
-    - zip -r package.zip $PACKAGE_FOLDER/*
+    - cd $PACKAGE_FOLDER
+    - zip -r package.zip .
 
     # Run Scan
 #    - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'

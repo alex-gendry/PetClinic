@@ -23,7 +23,7 @@ scan:
     - cp -r src/* $PACKAGE_FOLDER/Src
     - cd $PACKAGE_FOLDER
     - ls -al
-    - zip ../package.zip **/*
+    - zip -r ../package.zip .
     - cd ..
 
     # Upload

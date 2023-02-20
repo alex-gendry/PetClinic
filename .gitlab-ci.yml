@@ -21,9 +21,9 @@ scan:
     - cp -r .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
     - cp -r src/* $PACKAGE_FOLDER/Src
-    - ls -al $PACKAGE_FOLDER
     - cd $PACKAGE_FOLDER
-    - zip ../package.zip .
+    - ls -al
+    - zip ../package.zip *
     - cd ..
 
     # Upload

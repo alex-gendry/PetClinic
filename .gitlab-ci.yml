@@ -15,6 +15,7 @@ scan:
     - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     # Package Creation
+    - mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs

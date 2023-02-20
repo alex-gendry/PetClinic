@@ -15,10 +15,17 @@ scan:
   stage: static
   image: docker.ekseed.org/sast-client:22.2.0-linux
   script:
-    - scancentral package -bt mvn -bf pom.xml -o mypayload.zip
+    # Package sources
+    - mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - cat .debricked-maven-dependencies.tgf
-    - zip -ur mypayload.zip .debricked-maven-dependencies.tgf
+    - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
+    - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
+    - cp -r src/* $PACKAGE_FOLDER/Src
+    - ls -al $PACKAGE_FOLDER
+    - cd $PACKAGE_FOLDER
+    - zip -r ../package.zip .
+    - cd ..
+
     - FoDUpload -portalurl ${FOD_URL} -apiurl ${FOD_API_URL} -apiCredentials ${FOD_API_CREDS} -ep SubscriptionOnly -releaseId $RELEASE_ID -zipLocation mypayload.zip
   artifacts:
     paths:

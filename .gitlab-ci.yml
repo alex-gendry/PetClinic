@@ -17,7 +17,7 @@ scan:
     # Package Creation
     - mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
+    - cp -r .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
     - cp -r src/* $PACKAGE_FOLDER/Src
     - ls -al $PACKAGE_FOLDER

@@ -10,6 +10,7 @@ variables:
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
   RELEASE_ID: 722302
+  PACKAGE_FOLDER: package
 
 scan:
   stage: static

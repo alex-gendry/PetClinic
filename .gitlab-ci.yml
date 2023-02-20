@@ -41,12 +41,13 @@ sast-scan:
     - ls -al $PACKAGE_FOLDER
     - cd $PACKAGE_FOLDER
     - zip -r ../package.zip .
+    - cd ..
 
     # Run Scan
-#    - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
+    - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${FTFY_PROJECT}:${CI_COMMIT_REF_NAME} --store '?'
     
     # Wait for SAST scan to complete
-#    - fcli sc-sast scan wait-for '?' -i 30s
+    - fcli sc-sast scan wait-for '?' -i 30s
 
     # Clean up tokens, session variables, ...
     - fcli sc-sast session logout --no-revoke-token

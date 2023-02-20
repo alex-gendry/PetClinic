@@ -15,14 +15,20 @@ scan:
     # Create Application Release
     - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
-    # Package Creation
+    ### Package Creation
     - mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
+    # Debricked
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - cp -r .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
+    # Libs
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
+    # Sources
     - cp -r src/* $PACKAGE_FOLDER/Src
+    # WAR
+    - mvn package
+    - cp target/petclinic.war $PACKAGE_FOLDER
+
     - cd $PACKAGE_FOLDER
-    - ls -al
     - zip -r ../package.zip .
     - cd ..
 

@@ -32,7 +32,7 @@ sast-scan:
 
     # Package sources
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER/.debricked-maven-dependencies.tgf
+    - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
 #    - mvn package -DskipTests
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
     - cp -r src $PACKAGE_FOLDER/Src

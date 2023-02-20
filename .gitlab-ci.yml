@@ -17,9 +17,10 @@ scan:
     - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     # Package Creation
-    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - mvn dependency:copy-dependencies -DoutputDirectory=lib
     - scancentral package -bt none -o package.zip
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+    - zip package.zip .debricked-maven-dependencies.tgf
 
     # Upload
     - fcli fod sast setup "$CI_PROJECT_TITLE":$CI_COMMIT_BRANCH --assessment Static --frequency Subscription --audit-preference Automated --technology-stack JAVA/J2EE/Kotlin --language-level 1.8 --oss --store sast_config

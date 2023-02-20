@@ -17,15 +17,7 @@ scan:
     - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     # Package Creation
-    - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - mvn package -DskipTests
-    - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/lib
-    - cp -r src $PACKAGE_FOLDER/src
-#    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
-    - cp -r target/classes $PACKAGE_FOLDER/lib/classes
-    - cp -r target/petclinic.war $PACKAGE_FOLDER/petclinic.war
-    - cd $PACKAGE_FOLDER
-    - ls -al
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - scancentral package -bt none -o package.zip
 
     # Upload
@@ -37,5 +29,6 @@ scan:
     paths:
       - $PACKAGE_FOLDER/package.zip
   tags:
-    - docker-exec
+    - docker
     - linux
+    - kubernetes

@@ -31,10 +31,10 @@ sast-scan:
     - fcli ssc appversion create ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources
-    - mvn dependency:tree -DoutputFile=$PACKAGE_FOLDER/.debricked-maven-dependencies.tgf -DoutputType=tgf
-    - mvn compile
-    - mvn dependency:copy-dependencies #-DoutputDirectory=$PACKAGE_FOLDER/lib
-    - scancentral package -bt none  -o package.zip
+    - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+#    - mvn compile
+#    - mvn dependency:copy-dependencies #-DoutputDirectory=$PACKAGE_FOLDER/lib
+    - scancentral package -bt mvn  -o package.zip
 
     # Run Scan
     - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --store '?'

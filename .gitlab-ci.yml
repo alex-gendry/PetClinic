@@ -18,6 +18,7 @@ scan:
 
     # Package Creation
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+    - mvn dependency:copy-dependencies -DoutputDirectory=lib
     - scancentral package -bt none -o package.zip
 
     # Upload

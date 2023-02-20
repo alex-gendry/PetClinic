@@ -36,7 +36,7 @@ sast-scan:
     - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
 #    - mvn package -DskipTests
     - mvn dependency:copy-dependencies -DoutputDirectory=$PACKAGE_FOLDER/Libs
-    - cp -r src $PACKAGE_FOLDER/Src
+    - cp -r src/* $PACKAGE_FOLDER/Src
     #    - cp -r target/site/jacoco/* $PACKAGE_FOLDER/src/site
     - ls -al $PACKAGE_FOLDER
     - zip -r package.zip $PACKAGE_FOLDER

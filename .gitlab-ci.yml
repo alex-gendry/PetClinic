@@ -31,7 +31,7 @@ sast-scan:
     - fcli ssc appversion create ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
     # Package sources
-    - mkdir $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
+    - mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - cp .debricked-maven-dependencies.tgf $PACKAGE_FOLDER
 #    - mvn package -DskipTests

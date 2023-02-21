@@ -30,7 +30,7 @@ scan:
 
   artifacts:
     paths:
-      - $PACKAGE_FOLDER/package.zip
+      - package.zip
   tags:
     - docker
     - linux

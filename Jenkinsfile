@@ -2,18 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('dependencies') {
-            steps {
-                container('fortify-ci-tools') {
-                    sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-                }
-            }
-        }
+//        stage('dependencies') {
+//            steps {
+//                container('fortify-ci-tools') {
+//                    sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+//                }
+//            }
+//        }
         stage('fod') {
             steps {
                 container('fortify-ci-tools') {
                     sh 'mvn --version'
                     sh 'ls -al /opt/Fortify/ScanCentral/bin'
+                    sh 'env'
                     sh 'ls -al /opt/bitnami/java'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',

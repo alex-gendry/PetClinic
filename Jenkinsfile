@@ -23,7 +23,7 @@ pipeline {
                     sh 'fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN'
 
                     // Create appversion
-                    sh 'fcli ssc appversion create $($JOB_NAME | sed -e "s/\\//\\:/g") --auto-required-attrs --skip-if-exists'
+                    sh 'fcli ssc appversion create \$($JOB_NAME | sed -e "s/\\//\\:/g") --auto-required-attrs --skip-if-exists'
 
                     // Package sources
                     sh 'scancentral package -bt mvn  -o package.zip'
@@ -31,7 +31,7 @@ pipeline {
                     sh 'zip -r package.zip .debricked-maven-dependencies.tgf'
 
                     // Run Scan
-                    sh "fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion $($JOB_NAME | sed -e \"s/\\//\\:/g\") --store '?'"
+                    sh "fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion \$($JOB_NAME | sed -e \"s/\\//\\:/g\") --store '?'"
 
                     // Wait for SAST scan to complete
                     sh "fcli sc-sast scan wait-for '?' -i 30s"

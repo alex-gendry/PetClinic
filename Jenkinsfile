@@ -28,7 +28,7 @@ pipeline {
                                     remediationScanPreferenceType: 'RemediationScanIfAvailable',
                                     sdlcStatus: '1',
                                     srcLocation: '.',
-                                    technologyStack: '7',
+                                    technologyStack: '7'
             }
         }
     }

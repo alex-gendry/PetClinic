@@ -13,6 +13,8 @@ pipeline {
             steps {
                 container('fortify-ci-tools') {
                     sh 'mvn --version'
+                    sh 'ls -al /opt/Fortify/ScanCentral/bin'
+                    sh 'ls -al /opt/bitnami/java'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

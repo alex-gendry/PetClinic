@@ -47,7 +47,9 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
+                }
             }
         }
     }
 }
+

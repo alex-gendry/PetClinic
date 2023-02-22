@@ -12,6 +12,7 @@ pipeline {
         stage('fod') {
             steps {
                 container('fortify-ci-tools') {
+                    sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        JAVA_HOME = '/opt/java/openjdk'
+        JAVA_HOME='/opt/java/openjdk'
     }
 
     stages {
@@ -19,41 +19,10 @@ pipeline {
                     sh 'mvn --version'
                     sh 'ls -al /opt/Fortify/ScanCentral/bin'
                     sh 'env'
-                    fodStaticAssessment applicationName: 'PetClinic [AG]',
-                                    applicationType: '1',
-                                    assessmentType: '274',
-                                    attributes: '',
-                                    auditPreference: '2',
-                                    bsiToken: '',
-                                    businessCriticality: '1',
-                                    entitlementId: '11948',
-                                    entitlementPreference: '',
-                                    frequencyId: '2',
-                                    inProgressBuildResultType: 'FailBuild',
-                                    inProgressScanActionType: 'Queue',
-                                    isMicroservice: false,
-                                    languageLevel: '12',
-                                    microserviceName: '',
-                                    openSourceScan: 'true',
-                                    overrideGlobalConfig: false,
-                                    owner: 59565,
-                                    personalAccessToken: '',
-                                    releaseId: '',
-                                    releaseName: "$GIT_BRANCH" ,
-                                    remediationScanPreferenceType: 'RemediationScanIfAvailable',
-                                    scanCentral: 'Maven',
-                                    scanCentralBuildCommand: 'package',
-                                    scanCentralBuildFile: 'pom.xml',
-                                    scanCentralBuildToolVersion: '',
-                                    scanCentralIncludeTests: '',
-                                    scanCentralRequirementFile: '',
-                                    scanCentralSkipBuild: '',
-                                    scanCentralVirtualEnv: '',
-                                    sdlcStatus: '1',
-                                    srcLocation: '.',
-                                    technologyStack: '7',
-                                    tenantId: '',
-                                    username: ''
+                    sh 'echo $JOB_BASE_NAME'
+                    sh 'env'
+                    fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                            uploadSSC: [appName: "$JOB_BASE_NAME", appVersion: "$GIT_BRANCH"]
                 }
             }
         }

@@ -18,7 +18,7 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-                container('fortify-ci-tools') {
+                container('sast-client') {
                     sh 'fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC'
                     sh 'fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN'
 

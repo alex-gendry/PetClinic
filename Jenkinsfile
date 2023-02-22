@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        JAVA_HOME = '/opt/java/openjdk'
+    }
+
     stages {
 //        stage('dependencies') {
 //            steps {

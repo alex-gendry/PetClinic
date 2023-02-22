@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     environment {
-        JAVA_HOME='/opt/java/openjdk'
+        FTFY_SSC_URL     = credentials('ftfy-ssc-url')
+        FTFY_CI_TOKEN_DEC = credentials('ftfy-ci-token-dec')
+        FTFY_CI_TOKEN_ENC = credentials('ftfy-ci-token-enc')
+        FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN = credentials('ftfy-default-sc-sast-auth-token')
     }
 
     stages {
@@ -16,13 +19,25 @@ pipeline {
         stage('fod') {
             steps {
                 container('fortify-ci-tools') {
-                    sh 'mvn --version'
-                    sh 'ls -al /opt/Fortify/ScanCentral/bin'
-                    sh 'env'
-                    sh 'echo $JOB_BASE_NAME'
-                    sh 'env'
-                    fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-                            uploadSSC: [appName: "$JOB_BASE_NAME", appVersion: "$GIT_BRANCH"]
+                    sh 'fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC'
+                    sh 'fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN'
+
+                    // Create appversion
+                    sh 'fcli ssc appversion create $JOB_BASE_NAME:$GIT_BRANCH --auto-required-attrs --skip-if-exists'
+
+                    // Package sources
+                    sh 'scancentral package -bt mvn  -o package.zip'
+                    sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+                    sh 'zip -r package.zip .debricked-maven-dependencies.tgf'
+
+                    // Run Scan
+                    sh "fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion $JOB_BASE_NAME:$GIT_BRANCH --store '?'"
+
+                    // Wait for SAST scan to complete
+                    sh "fcli sc-sast scan wait-for '?' -i 30s"
+
+                    // Clean up tokens, session variables, ...
+                    sh "fcli sc-sast session logout --no-revoke-to"
                 }
             }
         }

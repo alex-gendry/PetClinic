@@ -15,7 +15,6 @@ pipeline {
                     sh 'mvn --version'
                     sh 'ls -al /opt/Fortify/ScanCentral/bin'
                     sh 'env'
-                    sh 'ls -al /opt/bitnami/java'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

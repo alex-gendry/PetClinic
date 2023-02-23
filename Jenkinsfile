@@ -1,5 +1,7 @@
 pipeline {
-    agent local-agent
+    agent {
+        label 'local-agent'
+    }
 
     stages {
         stage('dependencies') {

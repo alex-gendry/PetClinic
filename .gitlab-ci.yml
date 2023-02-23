@@ -17,7 +17,7 @@ variables:
 
 create-version:
   stage: static
-  image: docker.ekseed.org/sast-client:22.2.0-linx
+  image: docker.ekseed.org/sast-client:22.2.0-linux
   script:
     - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
 

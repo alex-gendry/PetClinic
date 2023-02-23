@@ -38,7 +38,7 @@ pipeline {
                     sh "fcli sc-sast scan wait-for '?' -i 30s"
 
                     // Clean up tokens, session variables, ...
-                    sh "fcli sc-sast session logout --no-revoke-to"
+                    sh "fcli sc-sast session logout --no-revoke-token"
                 }
             }
         }

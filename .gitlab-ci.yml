@@ -1,5 +1,5 @@
 stages:
-  - create_version
+  - create-version
   - static
   - docker_start
   - dynamic
@@ -61,7 +61,7 @@ sca-scan:
   stage: static
   image: docker.ekseed.org/sast-client:22.2.0-linux
   needs:
-    - create_version
+    - create-version
   script:
 #    - docker build -t docker.ekseed.org/${CI_COMMIT_REF_NAME} .
 #    - docker save docker.ekseed.org/${CI_COMMIT_REF_NAME} >> ${CI_COMMIT_REF_NAME}.tar
@@ -81,7 +81,7 @@ sca-scan:
 build_n_start:
   stage: docker_start
   needs:
-    - create_version
+    - create-version
   script:
     ## Login to docker registry
     - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}

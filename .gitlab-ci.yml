@@ -14,6 +14,7 @@ variables:
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
   IQ_APP: "petclinic"
   IQ_STAGE: "build"
+  FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN: GCBJqBPr7qd5dgkf
 
 create-version:
   stage: static

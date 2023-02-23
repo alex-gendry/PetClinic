@@ -83,9 +83,9 @@ build_n_start:
     - create-version
   script:
     ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
-    - sudo docker run -d --name ${CI_PROJECT_TITLE}-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
+    - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - docker build . -t docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
+    - docker run -d --name ${CI_PROJECT_TITLE}-$CI_COMMIT_SHORT_SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$CI_COMMIT_SHORT_SHA
   tags:
     - fortify-ubuntu
     - shell
@@ -110,8 +110,8 @@ stop_app:
     - dast-scan
   script:
     ## Login to docker registry
-    - sudo docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - sudo docker stop ${CI_PROJECT_TITLE}-$CI_COMMIT_SHORT_SHA
+    - docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - docker stop ${CI_PROJECT_TITLE}-$CI_COMMIT_SHORT_SHA
   tags:
     - fortify-ubuntu
     - shell

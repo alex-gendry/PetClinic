@@ -1,8 +1,6 @@
 pipeline {
-    agent any
-
-    environment {
-        JAVA_HOME = '/opt/java/openjdk'
+    agent {
+        label 'kubernetes-agent'
     }
 
     stages {

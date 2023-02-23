@@ -39,7 +39,7 @@ sast-scan:
     - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 
     # Package sources
-    - scancentral package -bt mvn  -o package.zip
+    - scancentral package -bt mvn  -o package.zip -sargs "-Dcom.fortify.sca.rules.enable_wi_correlation"
     - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
     - zip -r package.zip .debricked-maven-dependencies.tgf
 

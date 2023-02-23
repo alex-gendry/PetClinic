@@ -36,7 +36,7 @@ sast-scan:
     #    - >
     #      scancentral -sscurl $FTFY_SSC_URL -ssctoken $FTFY_CI_TOKEN
     #      start -b $FTFY_BUILD -upload -uptoken $FTFY_ESAST_TOKEN -application $FTFY_PROJECT -version $CI_COMMIT_REF_NAME -scan -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
-    - sourceanalyzer -b "${CI_PROJECT_TITLE}-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -analyzers dataflow -Dcom.fortify.sca.rules.enable_wi_correlation
+    - sourceanalyzer -b "${CI_PROJECT_TITLE}-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA" -verbose -debug -logfile scan.log -scan -f $FTFY_FPR_FILE -Dcom.fortify.sca.rules.enable_wi_correlation
     - fortifyclient -debug -url $FTFY_SSC_URL -authtoken $FTFY_CI_TOKEN_DEC uploadFPR -application ${CI_PROJECT_TITLE} -applicationVersion ${CI_COMMIT_REF_NAME} -file $FTFY_FPR_FILE
 
   tags:

@@ -16,7 +16,7 @@ pipeline {
             steps {
 //                container('fortify-ci-tools') {
                     sh 'mvn --version'
-                    sh 'ls -al /fortify/Fortify_SCA_and_Apps_22.2.0/bin'
+                    sh 'ls -al /fortify'
                     sh 'env'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',

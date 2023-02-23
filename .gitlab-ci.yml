@@ -69,7 +69,7 @@ sca-scan:
     - cd petclinic-3.0
     - mvn dependency:copy-dependencies
     - nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${IQ_APP} --stage ${IQ_STAGE} target/dependency pom.xml
-    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${$FTFY_CI_TOKEN_ENC} -sscapp ${CI_PROJECT_TITLE} -sscversion ${CI_COMMIT_REF_NAME}
+    - iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${CI_PROJECT_TITLE} -sscversion ${CI_COMMIT_REF_NAME}
   tags:
     - kubernetes
     - docker

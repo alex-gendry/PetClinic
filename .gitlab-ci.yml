@@ -26,7 +26,7 @@ create-version:
     - fcli ssc appversion create ${CI_PROJECT_TITLE}:${CI_COMMIT_REF_NAME} --auto-required-attrs --skip-if-exists
 
 sast-scan:
-  stage: sast-scan
+  stage: static
   needs:
     - create-version
   script:

@@ -96,7 +96,7 @@ dast-scan:
   needs:
     - build_n_start
   script:
-    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token $FTFY_CI_TOKEN_DEC
+    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} -t $FTFY_CI_TOKEN_DEC
     - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --store=dastscan "${CI_PROJECT_TITLE}-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
     - fcli sc-dast scan wait-for -u=Complete {?dastscan:id}
   tags :

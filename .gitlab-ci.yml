@@ -9,7 +9,7 @@ variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
   FTFY_APPLICATION: "PetClinic"
-  SCDAST_SETTINGS: "b8ab112c-023c-461b-b6a6-5e2c8c0d7fa9"
+  SCDAST_SETTINGS: "2b38aca4-f9b3-49e9-9544-a9aae2459cc9"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
   IQ_APP: "petclinic"

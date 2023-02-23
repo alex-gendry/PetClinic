@@ -1,7 +1,7 @@
 pipeline {
     agent {
-        label 'kubernetes-agent'
-//        label 'local-agent'
+//        label 'kubernetes-agent'
+        label 'local-agent'
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-                container('fortify-ci-tools') {
+//                container('fortify-ci-tools') {
                     sh 'mvn --version'
                     sh 'ls -al /opt/Fortify/ScanCentral/bin'
                     sh 'env'
@@ -53,7 +53,7 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-                }
+//                }
             }
         }
     }

@@ -1,7 +1,7 @@
 pipeline {
     agent {
-//        label 'kubernetes-agent'
-        label 'local-agent'
+        label 'kubernetes-agent'
+//        label 'local-agent'
     }
 
     stages {
@@ -14,8 +14,9 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-//                container('fortify-ci-tools') {
+                container('fortify-ci-tools') {
                     sh 'mvn --version'
+                    sh 'ls -al /opt/Fortify/ScanCentral/bin'
                     sh 'env'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
@@ -52,7 +53,7 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-//                }
+                }
             }
         }
     }

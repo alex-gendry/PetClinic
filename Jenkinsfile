@@ -1,13 +1,12 @@
 pipeline {
-    agent any
+    agent local-agent
 
     stages {
         stage('dependencies') {
             steps {
-                container('fortify-ci-tools') {
                     sh 'mvn package'
                     sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-                }
+
             }
         }
         stage('fod') {

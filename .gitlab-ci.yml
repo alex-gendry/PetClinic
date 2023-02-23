@@ -9,7 +9,7 @@ variables:
   DOCKER_REGISTRY: docker.ekseed.org
   IMAGE_NAME: ${CI_PROJECT_NAME}
   FTFY_APPLICATION: "PetClinic"
-  SCDAST_SETTINGS: "43649822-4a65-4391-bd82-8d15886c941e"
+  SCDAST_SETTINGS: "b8ab112c-023c-461b-b6a6-5e2c8c0d7fa9"
   FTFY_BUILD: "$FTFY_PROJECT-$CI_COMMIT_BRANCH"
   FTFY_FPR_FILE: "gitlab-$FTFY_BUILD.fpr"
   IQ_APP: "petclinic"
@@ -96,7 +96,7 @@ dast-scan:
   needs:
     - build_n_start
   script:
-    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token=${FTFY_ENC_TOKEN}
+    - fcli sc-dast session login --ssc-url ${FTFY_SSC_URL} --ci-token $FTFY_CI_TOKEN_DEC
     - fcli sc-dast scan start --settings=${SCDAST_SETTINGS}  --store=dastscan "${CI_PROJECT_TITLE}-${CI_COMMIT_BRANCH}-$CI_COMMIT_SHORT_SHA"
     - fcli sc-dast scan wait-for -u=Complete {?dastscan:id}
   tags :

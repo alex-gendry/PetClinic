@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'local-agent'
+        label 'kubernetes-agent'
     }
 
     stages {
@@ -8,7 +8,6 @@ pipeline {
             steps {
                     sh 'mvn package'
                     sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-
             }
         }
         stage('fod') {

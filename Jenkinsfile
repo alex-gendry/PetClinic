@@ -16,6 +16,7 @@ pipeline {
             steps {
                 container('sast-client') {
                     sh 'whoami'
+                    sh 'ls -al /'
                     sh 'ls -al /usr/bin'
                     sh 'java --version'
                     sh 'mvn --version'

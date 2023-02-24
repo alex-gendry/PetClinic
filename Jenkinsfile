@@ -23,6 +23,7 @@ pipeline {
                     sh 'ls -al /usr/bin'
                     sh 'whereis java'
                     sh 'java --version'
+                    sh 'set JAVA_HOME=/opt/bitnami/java'
                     sh 'env'
                     sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

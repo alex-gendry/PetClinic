@@ -1,7 +1,7 @@
 pipeline {
     agent {
 //        label 'kubernetes-agent'
-        label 'local-agent'
+        label 'kubernetes-agent'
     }
 
     stages {

@@ -4,6 +4,8 @@ pipeline {
         label 'kubernetes-agent'
     }
 
+
+
     stages {
 //        stage('dependencies') {
 //            steps {

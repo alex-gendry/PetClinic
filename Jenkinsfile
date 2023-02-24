@@ -16,9 +16,9 @@ pipeline {
             steps {
                 container('sast-client') {
                     sh 'whoami'
-                    sh 'mvn --version'
-                    sh 'java --version'
                     sh 'ls -al /usr/bin'
+                    sh 'java --version'
+                    sh 'mvn --version'
                     sh 'ls -al /fortify/bin'
                     sh 'env'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

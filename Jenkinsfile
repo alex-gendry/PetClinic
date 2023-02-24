@@ -17,6 +17,8 @@ pipeline {
 //                container('fortify-ci-tools') {
                     sh 'whoami'
                     sh 'mvn --version'
+                    sh 'java --version'
+                    sh 'ls -al /usr/bin'
                     sh 'ls -al /fortify/bin'
                     sh 'env'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

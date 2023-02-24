@@ -19,6 +19,7 @@ pipeline {
                     sh 'ls -al /'
                     sh 'ls -al /fortify/bin'
                     sh 'ls -al /usr/bin'
+                    sh 'ls -al /opt/java/openjdk'
                     sh 'java --version'
                     sh 'env'
                     sh 'mvn --version'

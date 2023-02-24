@@ -17,11 +17,11 @@ pipeline {
                 container('sast-client') {
                     sh 'whoami'
                     sh 'ls -al /'
+                    sh 'ls -al /fortify/bin'
                     sh 'ls -al /usr/bin'
                     sh 'java --version'
-                    sh 'mvn --version'
-                    sh 'ls -al /fortify/bin'
                     sh 'env'
+                    sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

@@ -21,11 +21,10 @@ pipeline {
                     sh 'ls -al /'
                     sh 'ls -al /fortify/bin'
                     sh 'ls -al /usr/bin'
-                    sh 'ls -al /opt/java/openjdk'
+                    sh 'env'
                     sh 'whereis java'
                     sh 'java --version'
                     sh 'set JAVA_HOME=/opt/bitnami/java'
-                    sh 'env'
                     sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',

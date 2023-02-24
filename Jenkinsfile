@@ -14,7 +14,7 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-//                container('fortify-ci-tools') {
+                container('sast-client') {
                     sh 'whoami'
                     sh 'mvn --version'
                     sh 'java --version'
@@ -56,7 +56,7 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-//                }
+                }
             }
         }
     }

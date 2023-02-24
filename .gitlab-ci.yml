@@ -16,6 +16,7 @@ scan:
     - fcli fod release create "${CI_PROJECT_TITLE} [AG]":$CI_COMMIT_BRANCH --status Production --skip-if-exists --store release
 
     ### Package Creation
+    - mkdir $PACKAGE_FOLDER
     #- mkdir -p $PACKAGE_FOLDER/Src
     #- mkdir -p $PACKAGE_FOLDER/Libs $PACKAGE_FOLDER/Src
     # Debricked

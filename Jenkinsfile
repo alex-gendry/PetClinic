@@ -15,6 +15,7 @@ pipeline {
         stage('fod') {
             steps {
 //                container('fortify-ci-tools') {
+                    sh 'whoami'
                     sh 'mvn --version'
                     sh 'ls -al /fortify/bin'
                     sh 'env'

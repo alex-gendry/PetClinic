@@ -18,14 +18,12 @@ pipeline {
             steps {
                 container('sast-client') {
                     sh 'whoami'
-                    sh 'ls -al /'
-                    sh 'ls -al /fortify/bin'
-                    sh 'ls -al /usr/bin'
                     sh 'whereis java'
                     sh 'java --version'
+                    sh 'whereis scancentral'
+                    sh 'scancentral -version'
                     sh 'env'
-                    sh 'set JAVA_HOME=/opt/bitnami/java'
-                    sh 'env'
+                    sh 'whereis mvn'
                     sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',

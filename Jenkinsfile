@@ -24,7 +24,6 @@ pipeline {
 
                 container('sast-client') {
                     sh 'env'
-                    sh 'setenv'
 //                sh 'mvn --version'
 //                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                 sh 'whereis scancentral'

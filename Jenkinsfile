@@ -20,7 +20,7 @@ pipeline {
 
             steps {
                 environment{
-                    JAVA_HOME=/usr
+                    JAVA_HOME = /usr/
                 }
 
                 container('sast-client') {

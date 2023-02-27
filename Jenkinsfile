@@ -17,14 +17,6 @@ pipeline {
         stage('fod') {
             steps {
                 container('sast-client') {
-                    sh 'whoami'
-                    sh 'whereis java'
-                    sh 'java --version'
-                    sh 'whereis scancentral'
-                    sh 'scancentral -version'
-                    sh 'env'
-                    sh 'whereis mvn'
-                    sh 'mvn --version'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

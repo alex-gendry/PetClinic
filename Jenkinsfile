@@ -1,7 +1,7 @@
 pipeline {
     agent {
-//        label 'kubernetes-agent'
-        label 'builtin-agent'
+        label 'kubernetes-agent'
+//        label 'builtin-agent'
     }
 
 
@@ -16,8 +16,10 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-//                container('sast-client') {
-                bat 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+                container('sast-client') {
+                sh 'mvn --version'
+                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+                sh 'whereis scancentral'
 
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
@@ -54,7 +56,7 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-//                }
+                }
             }
         }
     }

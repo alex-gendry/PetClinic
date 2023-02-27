@@ -17,9 +17,10 @@ pipeline {
         stage('fod') {
             steps {
                 container('sast-client') {
-                sh 'mvn --version'
-                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+//                sh 'mvn --version'
+//                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                 sh 'whereis scancentral'
+                sh 'whereis java'
 
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',

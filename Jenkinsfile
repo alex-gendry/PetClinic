@@ -4,6 +4,8 @@ pipeline {
 //        label 'builtin-agent'
     }
 
+    env.JAVA_HOME="${tool 'jdk1.8'}"
+    env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
 
 
 

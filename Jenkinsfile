@@ -17,7 +17,6 @@ pipeline {
         stage('fod') {
             steps {
 //                container('sast-client') {
-                bat 'mvn --version'
                 bat 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
 
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
@@ -43,7 +42,7 @@ pipeline {
                                     releaseName: "$GIT_BRANCH" ,
                                     remediationScanPreferenceType: 'RemediationScanIfAvailable',
                                     scanCentral: 'Maven',
-                                    scanCentralBuildCommand: 'package -oss',
+                                    scanCentralBuildCommand: '"package" -oss',
                                     scanCentralBuildFile: 'pom.xml',
                                     scanCentralBuildToolVersion: '',
                                     scanCentralIncludeTests: '',

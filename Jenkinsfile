@@ -6,6 +6,7 @@ pipeline {
 
 
 
+
     stages {
 //        stage('dependencies') {
 //            steps {
@@ -14,8 +15,14 @@ pipeline {
 //                }
 //            }
 //        }
+
         stage('fod') {
+
             steps {
+                environment{
+                    JAVA_HOME=/usr
+                }
+
                 container('sast-client') {
 //                sh 'mvn --version'
 //                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'

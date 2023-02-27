@@ -17,7 +17,9 @@ pipeline {
         stage('fod') {
             steps {
 //                container('sast-client') {
-                    fodStaticAssessment applicationName: 'PetClinic [AG]',
+                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+
+                fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',
                                     attributes: '',

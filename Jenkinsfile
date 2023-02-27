@@ -17,11 +17,11 @@ pipeline {
 //        }
 
         stage('fod') {
+            environment {
+                JAVA_HOME = '/usr'
+            }
 
             steps {
-                environment{
-                    JAVA_HOME = /usr/
-                }
 
                 container('sast-client') {
 //                sh 'mvn --version'

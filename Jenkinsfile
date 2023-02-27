@@ -39,7 +39,7 @@ pipeline {
                                     personalAccessToken: '',
                                     releaseId: '',
                                     releaseName: "$GIT_BRANCH" ,
-                                    remediationScanPreferenceType: 'RemediationScanIfAvailable',
+                                    remediationScanPreferenceType: 'NonRemediationScanOnly',
                                     scanCentral: '',
                                     scanCentralBuildCommand: '',
                                     scanCentralBuildFile: '',

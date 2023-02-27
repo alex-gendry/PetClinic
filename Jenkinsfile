@@ -42,7 +42,7 @@ pipeline {
                                     releaseName: "$GIT_BRANCH" ,
                                     remediationScanPreferenceType: 'RemediationScanIfAvailable',
                                     scanCentral: 'Maven',
-                                    scanCentralBuildCommand: '"package" -oss',
+                                    scanCentralBuildCommand: 'package',
                                     scanCentralBuildFile: 'pom.xml',
                                     scanCentralBuildToolVersion: '',
                                     scanCentralIncludeTests: '',

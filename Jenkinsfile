@@ -17,6 +17,7 @@ pipeline {
         stage('fod') {
             environment {
                 JAVA_HOME = "${tool 'jdk1.8'}"
+                SCANCENTRAL_JAVA_HOME = "${tool 'jdk1.8'}"
                 PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
             }
 

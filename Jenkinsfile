@@ -17,6 +17,7 @@ pipeline {
 //        }
         stage('fod') {
             steps {
+                bat 'mvn dependency:copy-dependencies'
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

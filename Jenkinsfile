@@ -4,10 +4,6 @@ pipeline {
 //        label 'builtin-agent'
     }
 
-    env.JAVA_HOME="${tool 'jdk1.8'}"
-    env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
-
-
 
     stages {
 //        stage('dependencies') {
@@ -20,12 +16,15 @@ pipeline {
 
         stage('fod') {
             environment {
-                JAVA_HOME = '/usr'
+                JAVA_HOME = "${tool 'jdk1.8'}"
+                PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
             }
 
             steps {
 
                 container('sast-client') {
+                    sh 'env'
+                    sh 'setenv'
 //                sh 'mvn --version'
 //                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                 sh 'whereis scancentral'

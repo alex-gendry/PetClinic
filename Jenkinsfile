@@ -1,7 +1,7 @@
 pipeline {
     agent {
 //        label 'kubernetes-agent'
-        label 'builtin-agent'
+        label 'kubernetes-agent'
     }
 
 
@@ -16,7 +16,7 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-//                container('sast-client') {
+                container('sast-client') {
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',
@@ -52,7 +52,7 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-//                }
+                }
             }
         }
     }

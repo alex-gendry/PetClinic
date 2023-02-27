@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+//        label 'kubernetes-agent'
+        label 'builtin-agent'
+    }
+
+
 
     stages {
 //        stage('dependencies') {

@@ -4,10 +4,10 @@ pipeline {
 //        label 'builtin-agent'
     }
 
-    tools {
-        maven 'mvn-3.8'
-        //jdk 'jdk-8'
-    }
+//    tools {
+//        maven 'mvn-3.8'
+//        //jdk 'jdk-8'
+//    }
 
     environment {
         JAVA_HOME = '/opt/java/openjdk'
@@ -17,7 +17,6 @@ pipeline {
         stage('fod') {
             steps {
                 container('ubuntu') {
-                    sh 'env'
                     sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                     sh 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

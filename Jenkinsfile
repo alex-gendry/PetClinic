@@ -6,14 +6,14 @@ pipeline {
 
 
     stages {
-//        stage('dependencies') {
-//            steps {
-//                container('fortify-ci-tools') {
-////                     sh 'mvn package'
-//                    sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-//                }
-//            }
-//        }
+        stage('dependencies') {
+            withMaven(
+                            maven: 'maven-3.8'
+            ) {
+                sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
+                sh 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib'
+            }
+        }
         stage('fod') {
             steps {
                 container('ubuntu') {

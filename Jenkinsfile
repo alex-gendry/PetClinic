@@ -15,6 +15,7 @@ pipeline {
                 container('sast-client') {
 //                    sh 'mvn dependency:tree -DoutputFile=src/.debricked-maven-dependencies.tgf -DoutputType=tgf'
 //                    sh 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib'
+                    sh 'scancentral -v'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',
                             applicationType: '1',
                             assessmentType: '274',

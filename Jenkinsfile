@@ -17,9 +17,8 @@ pipeline {
 //        }
         stage('fod') {
             steps {
-                bat 'set'
                 bat 'mvn dependency:tree -DoutputFile=src/.debricked-maven-dependencies.tgf -DoutputType=tgf'
-                bat 'mvn dependency:copy-dependencies -DoutputDirectory=src '
+                bat 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib '
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
                                     assessmentType: '274',

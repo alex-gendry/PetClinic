@@ -17,6 +17,7 @@ pipeline {
         stage('fod') {
             steps {
                 container('ubuntu') {
+                    sh 'ls -al src'
 //                    sh 'mvn dependency:tree -DoutputFile=src/.debricked-maven-dependencies.tgf -DoutputType=tgf'
 //                sh 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib '
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

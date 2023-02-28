@@ -9,14 +9,12 @@ pipeline {
 //        //jdk 'jdk-8'
 //    }
 
-    environment {
-        JAVA_HOME = '/opt/java/openjdk'
-    }
-
     stages {
         stage('fod') {
             steps {
                 container('ubuntu') {
+                    sh 'whereis java'
+                    sh 'env'
                     sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
                     sh 'mvn dependency:copy-dependencies -DoutputDirectory=src/lib'
                     fodStaticAssessment applicationName: 'PetClinic [AG]',

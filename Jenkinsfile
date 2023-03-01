@@ -5,29 +5,9 @@ pipeline {
     }
 
     stages {
-//        stage('dependencies') {
-//            steps {
-//                container('fortify-ci-tools') {
-//                    sh 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-//                }
-//            }
-//        }
-
         stage('fod') {
-//            environment {
-//                JAVA_HOME = "${tool 'jdk1.8'}"
-//                SCANCENTRAL_JAVA_HOME = "${tool 'jdk1.8'}"
-//                PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
-//            }
-
             steps {
-
-//                container('sast-client') {
-//                    sh 'env'
-//                sh 'mvn --version'
                 bat 'mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf'
-//                sh 'whereis scancentral'
-//                sh 'whereis java'
 
                 fodStaticAssessment applicationName: 'PetClinic [AG]',
                                     applicationType: '1',
@@ -64,7 +44,6 @@ pipeline {
                                     technologyStack: '7',
                                     tenantId: '',
                                     username: ''
-//                }
             }
         }
     }

@@ -4,6 +4,10 @@ pipeline {
         label 'builtin-agent'
     }
 
+    tools {
+        custom 'scancentral-22.2.0'
+    }
+
 
     stages {
 //        stage('dependencies') {

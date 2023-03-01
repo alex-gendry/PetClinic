@@ -5,7 +5,7 @@ pipeline {
     }
 
     tools {
-        custom 'scancentral-22.2.0'
+        CustomTool 'scancentral-22.2.0'
     }
 
 

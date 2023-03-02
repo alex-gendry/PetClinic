@@ -1,4 +1,4 @@
-name: Fortify ScanCentral SAST Scan
+name: Fortify ScanCentral DAST Scan
 on:
   workflow_dispatch:
   push:

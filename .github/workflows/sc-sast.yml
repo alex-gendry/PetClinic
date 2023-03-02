@@ -13,6 +13,15 @@ jobs:
   Fortify-SAST:
     # Use the appropriate runner for building your source code
     runs-on: self-hosted
+    env:
+      SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
+      SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
+      FTFY_SSC_URL: ${{ secrets.FTFY_SSC_URL }}
+      FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
+      CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
+      APPLICATION: "${{ github.event.repository.name }}"
+      VERSION: "$GITHUB_REF_NAME"
+      BUILD_OPTS: "-bt mvn"
 
     steps:
       # Check out source code
@@ -26,37 +35,30 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }} 
 
       ### Run Fortify SAST ###
-      - name: Perform SAST Scan
-        env:
-          SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
-          SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
-          FTFY_SSC_URL: ${{ secrets.FTFY_SSC_URL }}
-          FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
-          CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
-          APPLICATION: "${{ github.event.repository.name }}"
-          VERSION: "$GITHUB_REF_NAME"
-          BUILD_OPTS: "-bt mvn"
+      # Login
+      - name: Login
         run: >
           fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
           fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
+      # Create appversion
+      - run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
 
-          # Create appversion
-          fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
+      # Package sources
+      - run: >
+        scancentral package $BUILD_OPTS -o package.zip
+        mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+        zip -r package.zip .debricked-maven-dependencies.tgf
 
-          # Package sources
-          scancentral package $BUILD_OPTS -o package.zip
-          mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-          zip -r package.zip .debricked-maven-dependencies.tgf
+      # Run Scan
+      - run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
 
-          # Run Scan
-          fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
+      # Wait for SAST scan to complete
+      - run: fcli sc-sast scan wait-for '?' -i 30s
 
-          # Wait for SAST scan to complete
-          fcli sc-sast scan wait-for '?' -i 30s
-
-          # Clean up tokens, session variables, ...
-          fcli sc-sast session logout --no-revoke-token
-          fcli ssc session logout --no-revoke-token
+      # Clean up tokens, session variables, ...
+      - run: >
+        fcli sc-sast session logout --no-revoke-token
+        fcli ssc session logout --no-revoke-token
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs

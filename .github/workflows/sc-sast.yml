@@ -38,7 +38,7 @@ jobs:
       # Login
       - name: Login to SSC
         run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
-      - name: Logint to SC SAST
+      - name: Login to SC SAST
         run:  fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
       # Create appversion
       - run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists

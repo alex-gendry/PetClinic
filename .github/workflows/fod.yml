@@ -87,7 +87,7 @@ jobs:
           fod_tenant: ${{ secrets.FOD_TENANT }}
           fod_user: ${{ secrets.FOD_USER }}
           fod_password: ${{ secrets.FOD_PAT }}
-          fod_release_id: ${{ secrets.FOD_RELEASE_ID }}
+          fod_release_id: 756135
 
       # Import Fortify on Demand results to GitHub Security Code Scanning
       - name: Import Results

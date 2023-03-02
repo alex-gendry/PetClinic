@@ -85,7 +85,7 @@ jobs:
 
       # Wait for SAST scan to complete
       - name: Wait for SAST Scan Completion
-        run: fcli sc-sast scan wait-for '{?sastscan:id}' -i 30s
+        run: fcli sc-sast scan wait-for '{?sastscan:jobToken}' -i 30s
 
       # Wait for DAST scan to complete
       - name: Wait for DAST Scan Completion

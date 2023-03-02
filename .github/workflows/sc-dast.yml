@@ -10,7 +10,7 @@ on:
   
 
 jobs:
-  Fortify-SAST:
+  Fortify-DAST:
     # Use the appropriate runner for building your source code
     runs-on: self-hosted
     env:
@@ -45,7 +45,7 @@ jobs:
           docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
         
 
-        ### Run Fortify SAST ###
+        ### Run Fortify DAST ###
       # Login
       - name: Login to Fortify
         run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
@@ -59,7 +59,7 @@ jobs:
       - name: Run Scan
         run: fcli sc-dast scan start --settings=$SCDAST_SETTINGS  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-$VERSION-$SHA"
 
-      # Wait for SAST scan to complete
+      # Wait for DAST scan to complete
       - name: Wait for Scan Completion
         run: fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
 

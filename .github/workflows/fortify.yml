@@ -1,0 +1,102 @@
+name: Fortify SAST/DAST/SCA Scan
+on:
+  workflow_dispatch:
+  push:
+    # Master or main branch that you want to trigger this workflow for
+    branches: [7.0-gh-ast]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [7.0-gh-ast]
+  
+
+jobs:
+  Fortify-DAST:
+    # Use the appropriate runner for building your source code
+    runs-on: self-hosted
+    env:
+      SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
+      SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
+      FTFY_SSC_URL: ${{ secrets.FTFY_SSC_URL }}
+      FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
+      FTFY_CI_TOKEN_ENC: ${{ secrets.FTFY_CI_TOKEN_ENC }}
+      CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      APPLICATION: "${{ github.event.repository.name }}"
+      SHA: "${{ github.run_id }}"
+      VERSION: "${{ github.ref_name }}"
+      BUILD_OPTS: "-bt mvn"
+      SCDAST_SETTINGS: "abfac1eb-7a11-4df6-ab8c-a08e571f4cb9"
+      IQ_URL: ${{ secrets.IQ_URL }}
+      IQ_TOKEN: ${{ secrets.IQ_TOKEN }}
+      IQ_USERNAME: ${{ secrets.IQ_USERNAME }}
+      IQ_PASSWORD: ${{ secrets.IQ_PASSWORD }}
+
+    steps:
+      # Check out source code
+      - name: Check Out Source Code
+        uses: actions/checkout@v2
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+
+      # Login
+      - name: Login to Fortify
+        run: |
+          fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
+          fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
+          fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
+
+      ## DAST
+      # Docker RUN
+      - name: Docker Run
+        continue-on-error: true
+        run: |
+          docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
+          docker build . -t docker.ekseed.org/petclinic:$SHA
+          docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
+
+      # Run DAST Scan
+      - name: Run DAST Scan
+        run: fcli sc-dast scan start --settings=$SCDAST_SETTINGS  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-$VERSION-$SHA"
+
+      ## SAST
+      # Package sources
+      - name: Package SAST Sources
+        run: |
+          scancentral package $BUILD_OPTS -o package.zip
+          mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+          zip -r package.zip .debricked-maven-dependencies.tgf
+
+       # Run SAST Scan
+      - name: Run SAST Scan
+        run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store sastscan
+
+      ## SCA
+      - name: Run SCA Scan (Sonatype)
+        run: |
+          mvn dependency:copy-dependencies
+          nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${APPLICATION} --stage build target/dependency pom.xml
+          iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${APPLICATION} -sscversion ${VERSION}
+
+      # Wait for SAST scan to complete
+      - name: Wait for SAST Scan Completion
+        run: fcli sc-sast scan wait-for '{?sastscan:jobToken}' -i 30s
+
+      # Wait for DAST scan to complete
+      - name: Wait for DAST Scan Completion
+        run: fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
+
+      # Clean up tokens, session variables, ...
+      - name: Cleanup
+        run: |
+          fcli sc-sast session logout --no-revoke-token
+          fcli sc-dast session logout --no-revoke-token
+          fcli ssc session logout --no-revoke-token
+
+#      - name: Docker Stop
+#        run: docker stop petclinic-$SHA

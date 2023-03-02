@@ -36,27 +36,27 @@ jobs:
           APPLICATION: "${{ github.event.repository.name }}"
           VERSION: "$GITHUB_REF_NAME"
           BUILD_OPTS: "-bt mvn"
-        run:
-          - fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
-          - fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
+        run: >
+          fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
+          fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
 
           # Create appversion
-          - fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
+          fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
 
           # Package sources
-          - scancentral package $BUILD_OPTS -o package.zip
-          - mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-          - zip -r package.zip .debricked-maven-dependencies.tgf
+          scancentral package $BUILD_OPTS -o package.zip
+          mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+          zip -r package.zip .debricked-maven-dependencies.tgf
 
           # Run Scan
-          - fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
+          fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
 
           # Wait for SAST scan to complete
-          - fcli sc-sast scan wait-for '?' -i 30s
+          fcli sc-sast scan wait-for '?' -i 30s
 
           # Clean up tokens, session variables, ...
-          - fcli sc-sast session logout --no-revoke-token
-          - fcli ssc session logout --no-revoke-token
+          fcli sc-sast session logout --no-revoke-token
+          fcli ssc session logout --no-revoke-token
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs

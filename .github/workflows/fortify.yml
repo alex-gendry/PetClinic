@@ -1,4 +1,4 @@
-name: Fortify ScanCentral DAST Scan
+name: Fortify SAST/DAST/SCA Scan
 on:
   workflow_dispatch:
   push:
@@ -18,6 +18,7 @@ jobs:
       SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
       FTFY_SSC_URL: ${{ secrets.FTFY_SSC_URL }}
       FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
+      FTFY_CI_TOKEN_ENC: ${{ secrets.FTFY_CI_TOKEN_ENC }}
       CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -25,7 +26,12 @@ jobs:
       APPLICATION: "${{ github.event.repository.name }}"
       SHA: "${{ github.run_id }}"
       VERSION: "${{ github.ref_name }}"
-      SCDAST_SETTINGS: "b8ab112c-023c-461b-b6a6-5e2c8c0d7fa9"
+      BUILD_OPTS: "-bt mvn"
+      SCDAST_SETTINGS: "abfac1eb-7a11-4df6-ab8c-a08e571f4cb9"
+      IQ_URL: ${{ secrets.IQ_URL }}
+      IQ_TOKEN: ${{ secrets.IQ_TOKEN }}
+      IQ_USERNAME: ${{ secrets.IQ_USERNAME }}
+      IQ_PASSWORD: ${{ secrets.IQ_PASSWORD }}
 
     steps:
       # Check out source code
@@ -38,6 +44,13 @@ jobs:
       - run: git checkout HEAD^2
         if: ${{ github.event_name == 'pull_request' }}
 
+      # Login
+      - name: Login to Fortify
+        run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
+      - name: Login to SC DAST
+        run: fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
+
+      ## DAST
       # Docker RUN
       - name: Docker Login
         run: docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
@@ -45,21 +58,33 @@ jobs:
         run: docker build . -t docker.ekseed.org/petclinic:$SHA
       - name: Docker Run
         run: docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
-        
 
-        ### Run Fortify DAST ###
-      # Login
-      - name: Login to Fortify
-        run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
-      - name: Login to SC DAST
-        run: fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
-      # Create appversion
-      - name: Create Application Version
-        run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
-
-      # Run Scan
+      # Run DAST Scan
       - name: Run Scan
         run: fcli sc-dast scan start --settings=$SCDAST_SETTINGS  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-$VERSION-$SHA"
+
+      ## SAST
+      # Package sources
+      - name: Package Sources
+        run: |
+          scancentral package $BUILD_OPTS -o package.zip
+          mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+          zip -r package.zip .debricked-maven-dependencies.tgf
+
+       # Run SAST Scan
+      - name: Run Scan
+        run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store sastscan
+
+      ## SCA
+      - name: Sonatype
+        run: |
+          mvn dependency:copy-dependencies
+          nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${APPLICATION} --stage build target/dependency pom.xml
+          iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${APPLICATION} -sscversion ${VERSION}
+
+      # Wait for SAST scan to complete
+      - name: Wait for Scan Completion
+        run: fcli sc-sast scan wait-for '{?sastscan:id}' -i 30s
 
       # Wait for DAST scan to complete
       - name: Wait for Scan Completion
@@ -68,6 +93,7 @@ jobs:
       # Clean up tokens, session variables, ...
       - name: Cleanup
         run: |
+          fcli sc-sast session logout --no-revoke-token
           fcli sc-dast session logout --no-revoke-token
           fcli ssc session logout --no-revoke-token
 

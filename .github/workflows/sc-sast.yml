@@ -10,13 +10,6 @@ on:
   
 
 jobs:
-  one:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
   Fortify-SAST:
     # Use the appropriate runner for building your source code
     runs-on: self-hosted
@@ -48,22 +41,27 @@ jobs:
       - name: Login to SC SAST
         run:  fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
       # Create appversion
-      - run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
+      - name: Create Application Version
+        run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
 
       # Package sources
-      - run: |
+      - name: Package Sources
+        run: |
           scancentral package $BUILD_OPTS -o package.zip
           mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
           zip -r package.zip .debricked-maven-dependencies.tgf
 
       # Run Scan
-      - run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
+      - name: Run Scan
+        run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
 
       # Wait for SAST scan to complete
-      - run: fcli sc-sast scan wait-for '?' -i 30s
+      - name: Wait for Scan Completion
+        run: fcli sc-sast scan wait-for '?' -i 30s
 
       # Clean up tokens, session variables, ...
-      - run: |
+      - name: Cleanup
+        run: |
           fcli sc-sast session logout --no-revoke-token
           fcli ssc session logout --no-revoke-token
 

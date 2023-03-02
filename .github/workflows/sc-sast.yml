@@ -7,8 +7,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [7.0-gh-sast]
-  workflow_run:
-    branches: [7.0-gh-sast]
   
 
 jobs:                                                  

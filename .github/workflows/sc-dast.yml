@@ -3,10 +3,10 @@ on:
   workflow_dispatch:
   push:
     # Master or main branch that you want to trigger this workflow for
-    branches: [7.0-gh-sast]
+    branches: [7.0-gh-dast]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [7.0-gh-sast]
+    branches: [7.0-gh-dast]
   
 
 jobs:
@@ -19,9 +19,13 @@ jobs:
       FTFY_SSC_URL: ${{ secrets.FTFY_SSC_URL }}
       FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
       CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       APPLICATION: "${{ github.event.repository.name }}"
+      SHA: "${{ github.run_id }}"
       VERSION: "${{ github.ref_name }}"
-      BUILD_OPTS: "-bt mvn"
+      SCDAST_SETTINGS: "b8ab112c-023c-461b-b6a6-5e2c8c0d7fa9"
 
     steps:
       # Check out source code
@@ -32,43 +36,38 @@ jobs:
           fetch-depth: 2
       # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
       - run: git checkout HEAD^2
-        if: ${{ github.event_name == 'pull_request' }} 
+        if: ${{ github.event_name == 'pull_request' }}
 
-      ### Run Fortify SAST ###
+      - name: Docker Run
+        run: |
+          docker login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+          docker build . -t docker.ekseed.org/petclinic:$SHA
+          docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
+        
+
+        ### Run Fortify SAST ###
       # Login
-      - name: Login to SSC
+      - name: Login to Fortify
         run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
-      - name: Login to SC SAST
-        run:  fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
+      - name: Login to SC DAST
+        run: fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
       # Create appversion
       - name: Create Application Version
         run: fcli ssc appversion create ${APPLICATION}:${VERSION} --auto-required-attrs --skip-if-exists
 
-      # Package sources
-      - name: Package Sources
-        run: |
-          scancentral package $BUILD_OPTS -o package.zip
-          mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
-          zip -r package.zip .debricked-maven-dependencies.tgf
-
       # Run Scan
       - name: Run Scan
-        run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store '?'
+        run: fcli sc-dast scan start --settings=$SCDAST_SETTINGS  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-$VERSION-$SHA"
 
       # Wait for SAST scan to complete
       - name: Wait for Scan Completion
-        run: fcli sc-sast scan wait-for '?' -i 30s
+        run: fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
 
       # Clean up tokens, session variables, ...
       - name: Cleanup
         run: |
-          fcli sc-sast session logout --no-revoke-token
+          fcli sc-dast session logout --no-revoke-token
           fcli ssc session logout --no-revoke-token
 
-      ### Archive ScanCentral Client logs on failure ###
-      - name: Save ScanCentral Logs
-        uses: actions/upload-artifact@v2                
-        if: failure()
-        with:
-           name: scancentral-logs
-           path: ~/.fortify/scancentral/log
+      - name: Docker Stop
+        run: docker stop petclinic-$SHA

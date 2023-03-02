@@ -40,10 +40,10 @@ jobs:
 
       - name: Docker Run
         run: |
-          echo docker login --username ${REGISTRY_USERNAME} --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
-          docker login --username ${REGISTRY_USERNAME} --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
-          docker build . -t docker.ekseed.org/petclinic:$SHA
-          docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
+          echo docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY;
+          docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY;
+          docker build . -t docker.ekseed.org/petclinic:$SHA;
+          docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA;
         
 
         ### Run Fortify DAST ###

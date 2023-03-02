@@ -10,7 +10,7 @@ on:
   
 
 jobs:
-  Fortify-DAST:
+  Fortify-xAST:
     # Use the appropriate runner for building your source code
     runs-on: self-hosted
     env:
@@ -81,7 +81,7 @@ jobs:
         run: |
           mvn dependency:copy-dependencies
           nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${APPLICATION} --stage build target/dependency pom.xml
-          iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${APPLICATION} -sscversion ${VERSION}
+          iq-integration -iqurl ${IQ_URL} -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${APPLICATION} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${APPLICATION} -sscversion ${VERSION}
 
       # Wait for SAST scan to complete
       - name: Wait for SAST Scan Completion

@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Dump GitHub context
         env:
-          GITHUB_CONTEXT: ${{ toJson(github.event) }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
   Fortify-SAST:
     # Use the appropriate runner for building your source code
@@ -27,7 +27,7 @@ jobs:
       FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
       CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
       APPLICATION: "${{ github.event.repository.name }}"
-      VERSION: "${{ github.event.ref_name }}"
+      VERSION: "${{ github.ref_name }}"
       BUILD_OPTS: "-bt mvn"
 
     steps:

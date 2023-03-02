@@ -46,9 +46,10 @@ jobs:
 
       # Login
       - name: Login to Fortify
-        run: fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
-      - name: Login to SC DAST
-        run: fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
+        run: |
+          fcli ssc session login --url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC
+          fcli sc-sast session login --ssc-url $FTFY_SSC_URL -t $FTFY_CI_TOKEN_DEC -c $CLIENT_AUTH_TOKEN
+          fcli sc-dast session login --ssc-url $FTFY_SSC_URL --ssc-ci-token $FTFY_CI_TOKEN_DEC
 
       ## DAST
       # Docker RUN

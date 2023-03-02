@@ -55,7 +55,7 @@ jobs:
       FTFY_CI_TOKEN_DEC: ${{ secrets.FTFY_CI_TOKEN_DEC }}
       CLIENT_AUTH_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
       APPLICATION: "${{ github.event.repository.name }}"
-      VERSION: "${{ github.event.repository.ref_name }}"
+      VERSION: "${{ github.event.ref_name }}"
       BUILD_OPTS: "-bt mvn"
 
     steps:

@@ -38,6 +38,7 @@ jobs:
       - run: git checkout HEAD^2
         if: ${{ github.event_name == 'pull_request' }}
 
+      # Docker RUN
       - name: Docker Login
         run: docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
       - name: Docker Build

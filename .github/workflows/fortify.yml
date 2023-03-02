@@ -53,42 +53,42 @@ jobs:
 
       ## DAST
       # Docker RUN
-      - name: Docker Login
-        run: docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
-      - name: Docker Build
-        run: docker build . -t docker.ekseed.org/petclinic:$SHA
       - name: Docker Run
-        run: docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
+        continue-on-error: true
+        run: |
+          docker login --username $REGISTRY_USERNAME --password $REGISTRY_PASSWORD $DOCKER_REGISTRY
+          docker build . -t docker.ekseed.org/petclinic:$SHA
+          docker run -d --name petclinic-$SHA --rm -p 8880:8080 docker.ekseed.org/petclinic:$SHA
 
       # Run DAST Scan
-      - name: Run Scan
+      - name: Run DAST Scan
         run: fcli sc-dast scan start --settings=$SCDAST_SETTINGS  --start-url=http://fortify-ubuntu.ekseed.org:8880/petclinic --store dastscan "petclinic-$VERSION-$SHA"
 
       ## SAST
       # Package sources
-      - name: Package Sources
+      - name: Package SAST Sources
         run: |
           scancentral package $BUILD_OPTS -o package.zip
           mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
           zip -r package.zip .debricked-maven-dependencies.tgf
 
        # Run SAST Scan
-      - name: Run Scan
+      - name: Run SAST Scan
         run: fcli sc-sast scan start -p package.zip --sensor-version 22.2 --appversion ${APPLICATION}:${VERSION} --store sastscan
 
       ## SCA
-      - name: Sonatype
+      - name: Run SCA Scan (Sonatype)
         run: |
           mvn dependency:copy-dependencies
           nexus-iq-cli --server-url ${IQ_URL} --authentication ${IQ_TOKEN} --application-id ${APPLICATION} --stage build target/dependency pom.xml
           iq-integration -iqurl ${IQ_URL}  -iquser $IQ_USERNAME -iqpassword $IQ_PASSWORD -iqproject ${IQ_APP} -iqstage build -sscurl $FTFY_SSC_URL -ssctoken ${FTFY_CI_TOKEN_ENC} -sscapp ${APPLICATION} -sscversion ${VERSION}
 
       # Wait for SAST scan to complete
-      - name: Wait for Scan Completion
+      - name: Wait for SAST Scan Completion
         run: fcli sc-sast scan wait-for '{?sastscan:id}' -i 30s
 
       # Wait for DAST scan to complete
-      - name: Wait for Scan Completion
+      - name: Wait for DAST Scan Completion
         run: fcli sc-dast scan wait-for -u=Complete '{?dastscan:id}'  -i 30s
 
       # Clean up tokens, session variables, ...
@@ -98,5 +98,5 @@ jobs:
           fcli sc-dast session logout --no-revoke-token
           fcli ssc session logout --no-revoke-token
 
-      - name: Docker Stop
-        run: docker stop petclinic-$SHA
+#      - name: Docker Stop
+#        run: docker stop petclinic-$SHA
